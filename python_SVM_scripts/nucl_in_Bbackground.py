@@ -23,7 +23,7 @@ outf = binfile + 'input/' + tmp
 with open(outf, 'w') as outfile:
     outfile.write(sout)
 
-os.system('./svm.x %s' % tmp[:-4])
+os.system('%s/svm.x %s' % (binfile, tmp[:-4]))
 
 spec = []
 

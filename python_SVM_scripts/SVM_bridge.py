@@ -3,7 +3,7 @@ import sys, os, re
 import numpy as np
 from operator import itemgetter
 
-binfile = '/home/johannesk/kette_repo/source/SVMmagnetic/SVMxyzA/'
+binfile = '/home/johannesk/kette_repo/source/Backgrnd/SVMxyzA/'
 
 MeVfm = 197.3161329
 mn = {

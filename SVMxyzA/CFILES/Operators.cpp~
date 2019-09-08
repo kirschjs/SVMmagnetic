@@ -1,0 +1,115 @@
+
+#include "Operators.h"
+#include "Input.h"
+#include <vector>
+#include <Eigen> 
+using namespace Eigen;
+
+
+
+Operators::Operators(Input &input) : input(input)
+{
+	npar = input.npar;
+
+	//read spin data from input
+	spin_ncmp = input.spin.ncmp;
+	spin_coef = input.spin.coef;
+	for (int icmp = 0; icmp < spin_ncmp; icmp++) 
+		sz.push_back(input.spin.cmp[icmp].sz);
+
+	//read isospin data from input
+	isospin_ncmp = input.isospin.ncmp;
+	isospin_coef = input.isospin.coef;
+	for (int icmp = 0; icmp < isospin_ncmp; icmp++)
+		tz.push_back(input.isospin.cmp[icmp].tz);
+
+}
+
+double Operators::O(int i, int j, VectorXi P, int kind)
+{
+	double x = 0;
+	for (int icmp = 0; icmp < spin_ncmp; icmp++)
+	{
+		for (int jcmp = 0; jcmp < spin_ncmp; jcmp++)
+		{
+			x = x + spin_coef[icmp] * spin_coef[jcmp] * SpinOp(sz[icmp],sz[jcmp] ,i ,j ,P ,kind);
+		}
+	}
+
+	double y = 0;
+	for (int icmp = 0; icmp < isospin_ncmp; icmp++)
+	{
+		for (int jcmp = 0; jcmp < isospin_ncmp; jcmp++)
+		{
+			y = y + isospin_coef[icmp] * isospin_coef[jcmp] * IsospinOp(tz[icmp], tz[jcmp], i, j, P, kind);
+		}
+	}
+
+	return x*y;
+}
+
+
+double Operators::SpinOp(std::vector<int> sz1, std::vector<int> sz2, int i, int j, VectorXi P, int kind)
+{
+
+	for (int ipar = 0; ipar < npar; ipar++)
+	{
+		if ((ipar != i) && (ipar != j))
+		{
+			if (sz1[ipar] != sz2[P(ipar)]) return 0;
+		}
+	}
+
+	if (kind == 0)
+	{
+		return O_0(sz1[i], sz1[j], sz2[P(i)], sz2[P(j)]);
+	}
+	if (kind == 1)
+	{
+		return O_1(sz1[i], sz1[j], sz2[P(i)], sz2[P(j)]);
+	}
+}
+
+
+double Operators::IsospinOp(std::vector<int> tz1, std::vector<int> tz2, int i, int j, VectorXi P, int kind)
+{
+
+	for (int ipar = 0; ipar < npar; ipar++)
+	{
+		if ((ipar != i) && (ipar != j))
+		{
+			if (tz1[ipar] != tz2[P(ipar)]) return 0;
+		}
+	}
+
+	if (kind == 0)
+	{
+		return O_0(tz1[i], tz1[j], tz2[P(i)], tz2[P(j)]);
+	}
+	if (kind == 1)
+	{
+		return O_1(tz1[i], tz1[j], tz2[P(i)], tz2[P(j)]);
+	}
+}
+
+
+double Operators::O_0(int i1, int i2, int i3, int i4) //identity operatot
+{
+	//	1 for spin up
+	//	2 for spin down
+	double x = 0;
+	if ((i1 == i3) && (i2 == i4)) x = 1.0;
+	return x;
+}
+double Operators::O_1(int i1, int i2, int i3, int i4) //sigma*sigma 
+{
+	//	1 for spin up
+	//	2 for spin down
+	double x = 0;
+	if ((i1 == i3) && (i2 == i4)) x = 1;
+	return x;
+}
+
+Operators::~Operators()
+{
+}

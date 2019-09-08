@@ -1,0 +1,33 @@
+
+   npar=2
+!  masses
+   xm(1)=1.  xm(2)=1.         
+!  charges
+!  z( 1)=0.  z( 2)=0. 
+!
+!   isospin configurations
+    nisc=1
+!    cisc(1)= 1 iso(1,1)=2 iso(2,1)=1 
+!    cisc(2)=-1 iso(1,2)=1 iso(2,2)=2
+    cisc(1)= 1 iso(1,1)=1 iso(2,1)=1     
+!
+!   spin configurations
+    nspc=2
+    cspc(1)= 1 isp(1,1)=1 isp(2,1)=2 
+    cspc(2)= 1 isp(1,2)=2 isp(2,2)=1 
+!    cspc(1)= 1 isp(1,1)=1 isp(2,1)=1     
+!
+    h2m=41.47
+    irand=-1776 ibf=1
+!   eB=0.0241138 
+    eB=0    eBspin=0
+    mm0=15  kk0=5  mnb=40
+    bmin=0.02  bmax=6
+!
+! Pionless EFT LO Potential
+! number of potential terms and operators
+  npt=1  nop=1
+ !vpot(1,1)=-484.92093      apot(1,1)=4   bpot(1,1)=0  npot(1,1)=0
+ 
+
+

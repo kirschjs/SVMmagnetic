@@ -172,8 +172,7 @@ e^{-\frac{\Lambda^2}{4}
 e^{-\frac{1}{2}\ve{x}^TA_x\ve{x}}~
 e^{-\frac{1}{2}\ve{y}^TA_y\ve{y}}~
 e^{-\frac{1}{2}\ve{z}^TA_z\ve{z}}\cdot
-\sumin\lambda_i\ket{s^i_1,\ldots,s^i_N}\cdot
-\sumin\theta_i\ket{t^i_1,\ldots,t^i_N}
+\sum\limits_\alpha\lambda_\alpha\sum\limits_{n=1}^{N_\text{int}}C^n_\alpha\ket{s^n_1,\ldots,s^n_N~;~t^n_1,\ldots,t^n_N}
 \ee
 
 \paragraph{The generic matrix element}
@@ -199,19 +198,22 @@ with $\hat{P}\in\mathcal{A}$ and
 \be\la{tab.mes}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{2.4}
-\begin{array}{l|l}
+\begin{array}{l|c}
 \hline
 \hat{\mathcal{O}} & 
 I_\mathcal{O}(A',\ve{\lambda}',\ve{\theta}',A,\ve{\lambda},\ve{\theta};P) \\
 \hline
-\mathbb{1}                                            &  \\
-\ve{p}^\intercal\mathbb{1}_{(3N\times 3N)}\ve{p}      &  \\
-\sumin q_iL_i^z                                       &  \\
-\sumin q_i(x_i^2+y_i^2+z_i^2)                         &  \\
-\sumin q_i\sigma_i^z                                  &  \\
-\sumijn e^{-\frac{\Lambda^2}{4}(\ve{r}_i-\ve{r}_j)^2} &  \\
+\mathbb{1}                                                           &  \\
+\ve{p}^\intercal\mathbb{1}_{(3N\times 3N)}\ve{p}                     &  \\
+\sumin q_iL_i^z=q_i~\left(x_i\partial_{y_i}-y_i\partial_{x_i}\right) &  0\\
+\sumin q_i(x_i^2+y_i^2+z_i^2)                                        &  \\
+\sumin q_i\sigma_i^z                                                 &  \\
+\sumijn e^{-\frac{\Lambda^2}{4}(\ve{r}_i-\ve{r}_j)^2}                &  \\
 \hline
 \end{array}
 \ee
-
+with
+\begin{align}
+\mathbb{A}_x&=&A'_x
+\end{align}
 \end{document}

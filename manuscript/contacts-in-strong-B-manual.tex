@@ -1,0 +1,217 @@
+\documentclass[aps,prd,onecolumn
+,tightenlines,letterpaper,notitlepage,
+%superscriptaddress,
+nofootinbib]{revtex4-1}
+\usepackage{amssymb,latexsym}
+\usepackage{amsmath,amsbsy,bbm}
+\usepackage{epsfig,bm,color}
+\usepackage{cjhebrew}
+\usepackage{nicefrac}
+\usepackage{graphicx,comment}
+\usepackage{slashed}
+\usepackage{bbold}
+
+%\usepackage{hyperref}
+\unitlength=1mm
+\DeclareMathOperator{\st}{str}
+\DeclareMathOperator{\Erfc}{Erfc}
+\DeclareMathOperator{\Erf}{Erf}
+\DeclareMathOperator{\Pf}{Pf}
+\DeclareMathOperator{\sign}{sign}
+
+\usepackage{dutchcal}
+
+\usepackage{calligra}
+
+\DeclareMathAlphabet{\mathcalligra}{T1}{calligra}{m}{n}
+\DeclareFontShape{T1}{calligra}{m}{n}{<->s*[2.2]callig15}{}
+\newcommand{\scriptr}{\mathcalligra{r}\,}
+\newcommand{\boldscriptr}{\pmb{\mathcalligra{r}}\,}
+
+\begin{document}
+
+\def\a{{\alpha}}
+\def\b{{\beta}}
+\def\d{{\delta}}
+\def\D{{\Delta}}
+\def\X{{\Xi}}
+\def\e{{\varepsilon}}
+\def\g{{\gamma}}
+\def\G{{\Gamma}}
+\def\k{{\kappa}}
+\def\l{{\lambda}}
+\def\L{{\Lambda}}
+\def\m{{\mu}}
+\def\n{{\nu}}
+\def\o{{\omega}}
+\def\O{{\Omega}}
+\def\S{{\Sigma}}
+\def\s{{\sigma}}
+\def\th{{\theta}}
+
+\def\ol#1{{\overline{#1}}}
+
+\def\Dslash{D\hskip-0.65em /}
+\def\Dtslash{\tilde{D} \hskip-0.65em /}
+
+\def\order{{\mathcal O}}
+
+\def\Dt{{\tilde{D}}}
+\def\St{{\tilde{\Sigma}}}
+
+\def\eqref#1{{(\ref{#1})}}
+
+\newcommand{\caf}{\text{\cjRL{b}}}
+\newcommand{\he}{${}^4$He}
+\newcommand{\hes}{${}^3$He}
+\newcommand{\tr}{${}^3$H}
+\newcommand{\ls}{\ve{L}\cdot\ve{S}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\as}{a_s}
+\newcommand{\at}{a_t}
+\newcommand{\ecm}{E_\textrm{\small c.m.}}
+\newcommand{\dq}{\mbox{d\hspace{-.55em}$^-$}}
+\newcommand{\mpis}{$m_\pi=137~${\small MeV}}
+\newcommand{\mpim}{$m_\pi=450~${\small MeV}}
+\newcommand{\mpil}{$m_\pi=806~${\small MeV}}
+\newcommand{\muh}{\mu_{^3\text{\scriptsize He}}}
+\newcommand{\mut}{\mu_{^3\text{\scriptsize H}}}
+\newcommand{\mud}{\mu_\text{\scriptsize D}}
+\newcommand{\pode}{\beta_{\text{\scriptsize D},\pm1}}
+\newcommand{\poh}{\beta_{^3\text{\scriptsize He}}}
+\newcommand{\pot}{\beta_{^3\text{\scriptsize H}}}
+\newcommand{\com}[1]{{\scriptsize \sffamily \bfseries \color{red}{#1}}}
+\newcommand{\eg}{\textit{e.g.}\;}
+\newcommand{\ie}{\textit{i.e.}\;}
+\newcommand{\cf}{\textit{c.f.}\;}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\la}{\label}
+\newcommand{\ber}{\begin{eqnarray}}
+\newcommand{\eer}{\end{eqnarray}}
+\newcommand{\nn}{\nonumber}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\thalf}{\nicefrac[]{3}{2}}
+\newcommand{\bs}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\newcommand{\beq}{\begin{align}}
+\newcommand{\eeq}{\end{align}}
+\newcommand{\bk}{\bs k}
+\newcommand{\bt}{B_{^{3}\text{H}}}
+\newcommand{\bh}{B_{^{3}\text{He}}}
+\newcommand{\bd}{B_\text{D}}
+\newcommand{\ba}{B_\alpha}
+\newcommand{\rgm}{$\mathbb{R}$GM}
+\newcommand{\bra}[1] {\left\langle~#1~\right|}
+\newcommand{\ket}[1] {\left|~#1~\right\rangle}
+\newcommand{\lam}[1]{$\Lambda=#1~$fm$^{-1}$}
+\newcommand{\parg}[1] {\paragraph*{-\,\textit{#1}\,-}}
+\newcommand{\nopi}{\pi\hspace{-6pt}/}
+\newcommand{\ve}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\xvec}{\bs{x}}
+\newcommand{\rvec}{\bs{r}}
+\newcommand{\sgve}{\ensuremath{\boldsymbol{\sigma}}}
+\newcommand{\tave}{\ensuremath{\boldsymbol{\tau}}}
+\newcommand{\na}{\nabla}
+\newcommand{\sumin}{\sum\limits_{i=1}^N}
+\newcommand{\sumijn}{\sum\limits_{i<j}^N}
+\newcommand{\sumijk}{\sum_\text{cyc.}\sum_{i<j<k}}
+\newcommand{\tx}{\tilde{x}}
+\newcommand{\eftnopi}{\mbox{EFT($\slashed{\pi}$)}}
+
+\newcommand{\cmment}[2]{\paragraph*{Ecce: #1}\texttt{\textcolor{blue}{#2}}}
+
+
+
+\author{$\mathcal{M}$.~$\mathcal{Elyahu}$}
+\author{$\mathcal{N}$.~$\mathcal{Barnea}$}
+\author{$\mathcal{J}$.~$\mathcal{Kirscher}$}
+%\email[]{$\texttt{bctiburz@chinamail.cn}$}
+%\affiliation{%
+%$\mathcal{CCNY}$ (Consolidated Chinese National Yeshiva)}
+
+\title{
+Strong magnetic fields and contact interactions in few-fermion systems
+} 
+
+\begin{abstract}
+Technical manual detailing the implementation of a variational solution of the non-relativistic few-body
+problem in an external, \ie, static magnetic field.
+\end{abstract}
+
+\pacs{}
+
+\maketitle
+
+\paragraph{The symmetric Gauge}
+\be\la{eq.symmgauge}
+\ve{A}_i=\frac{B_0}{2}(-y_i,x_i,0)
+\ee
+
+\paragraph{The Hamiltonian}
+\begin{align}\la{eq.hamiltonian}
+\hat{H}=-\frac{\hbar^2}{2m}&\sumin\Bigg\lbrace
+\ve{\nabla}_i^2
++i\left(\frac{\hbar^2}{2m}\right)\left(\frac{q_iB_0}{\hbar}\right)
+L_i^z
++\left(\frac{\hbar^2}{2m}\right)\left(\frac{q_iB_0}{\hbar}\right)^2\frac{1}{4}
+\left(x_i^2+y_i^2\right)
+-g_i\left(\frac{\hbar^2}{2m}\right)\left(\frac{q_iB_0}{\hbar}\right)\sigma_{z_i}
+\Bigg\rbrace\\
+&+~\sumijn\left[C_a +
+C_b(\sigma^+_i\sigma^-_j+\sigma^-_i\sigma^+_j-\sigma^z_i\sigma^z_j)\right]~e^{-\frac{\Lambda^2}{4}(\ve{r}_i-\ve{r}_j)^2}
++\sumijk D\cdot
+e^{-\frac{\Lambda^2}{4}
+\left((\ve{r}_i-\ve{r}_j)^2+(\ve{r}_i-\ve{r}_k)^2\right)}
+\end{align}
+
+\paragraph{The variational basis}
+\be\la{eq.svmME}
+\ket{A,\ve{\lambda},\ve{\theta}}:=
+e^{-\frac{1}{2}\ve{x}^TA_x\ve{x}}~
+e^{-\frac{1}{2}\ve{y}^TA_y\ve{y}}~
+e^{-\frac{1}{2}\ve{z}^TA_z\ve{z}}\cdot
+\sumin\lambda_i\ket{s^i_1,\ldots,s^i_N}\cdot
+\sumin\theta_i\ket{t^i_1,\ldots,t^i_N}
+\ee
+
+\paragraph{The generic matrix element}
+\be\la{eq.genericme}
+I_\mathcal{O}(A',\ve{\lambda}',\ve{\theta}',A,\ve{\lambda},\ve{\theta};P):=
+\bra{A',\ve{\lambda}',\ve{\theta}'}~\hat{\mathcal{O}}~\hat{P}~
+\ket{A,\ve{\lambda},\ve{\theta}}
+\ee
+with $\hat{P}\in\mathcal{A}$ and
+\be\la{eq.oplist}
+\hat{\mathcal{O}}\in\left\lbrace
+\mathbb{1}~;~
+\ve{p}^\intercal\mathbb{1}_{(3N\times 3N)}\ve{p}~;~
+\sumin q_iL_i^z~;~
+\sumin q_i(x_i^2+y_i^2+z_i^2)~;~
+\sumin q_i\sigma_i^z~;~
+\sumijn e^{-\frac{\Lambda^2}{4}(\ve{r}_i-\ve{r}_j)^2}
+\right\rbrace\
+\ee
+
+\paragraph{The matrix elements}
+
+\be\la{tab.mes}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{2.4}
+\begin{array}{l|l}
+\hline
+\hat{\mathcal{O}} & 
+I_\mathcal{O}(A',\ve{\lambda}',\ve{\theta}',A,\ve{\lambda},\ve{\theta};P) \\
+\hline
+\mathbb{1}                                            &  \\
+\ve{p}^\intercal\mathbb{1}_{(3N\times 3N)}\ve{p}      &  \\
+\sumin q_iL_i^z                                       &  \\
+\sumin q_i(x_i^2+y_i^2+z_i^2)                         &  \\
+\sumin q_i\sigma_i^z                                  &  \\
+\sumijn e^{-\frac{\Lambda^2}{4}(\ve{r}_i-\ve{r}_j)^2} &  \\
+\hline
+\end{array}
+\ee
+
+\end{document}

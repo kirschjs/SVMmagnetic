@@ -10,6 +10,7 @@ nofootinbib]{revtex4-1}
 \usepackage{graphicx,comment}
 \usepackage{slashed}
 \usepackage{bbold}
+\usepackage{lipsum,pdflscape}
 
 %\usepackage{hyperref}
 \unitlength=1mm
@@ -105,6 +106,8 @@ nofootinbib]{revtex4-1}
 \newcommand{\rgm}{$\mathbb{R}$GM}
 \newcommand{\bra}[1] {\left\langle~#1~\right|}
 \newcommand{\ket}[1] {\left|~#1~\right\rangle}
+\newcommand{\overlap}[2] {\left\langle~#1~\left|~#2~\right.\right\rangle}
+\newcommand{\me}[3] {\left\langle~#1~\left|~#2~\left|~#3~\right.\right.\right\rangle}
 \newcommand{\lam}[1]{$\Lambda=#1~$fm$^{-1}$}
 \newcommand{\parg}[1] {\paragraph*{-\,\textit{#1}\,-}}
 \newcommand{\nopi}{\pi\hspace{-6pt}/}
@@ -117,6 +120,7 @@ nofootinbib]{revtex4-1}
 \newcommand{\sumin}{\sum\limits_{i=1}^N}
 \newcommand{\sumijn}{\sum\limits_{i<j}^N}
 \newcommand{\sumijk}{\sum_\text{cyc.}\sum_{i<j<k}}
+\newcommand{\prodcart}{\prod\limits_{c=x,y,z}}
 \newcommand{\tx}{\tilde{x}}
 \newcommand{\eftnopi}{\mbox{EFT($\slashed{\pi}$)}}
 
@@ -168,20 +172,24 @@ e^{-\frac{\Lambda^2}{4}
 
 \paragraph{The variational basis}
 \be\la{eq.svmME}
-\ket{A,\ve{\lambda},\ve{\theta}}:=
+\ket{A,\ve{\lambda}}:=
 e^{-\frac{1}{2}\ve{x}^TA_x\ve{x}}~
 e^{-\frac{1}{2}\ve{y}^TA_y\ve{y}}~
 e^{-\frac{1}{2}\ve{z}^TA_z\ve{z}}\cdot
-\sum\limits_\alpha\lambda_\alpha\sum\limits_{n=1}^{N_\text{int}}C^n_\alpha\ket{s^n_1,\ldots,s^n_N~;~t^n_1,\ldots,t^n_N}
+\sum\limits_\alpha^{|\lambda|}\lambda_\alpha\underbrace{\sum\limits_{n=1}^{N_\text{int}}C^n_\alpha\ket{s^n_1,\ldots,s^n_N~;~t^n_1,\ldots,t^n_N}}_{\text{input
+together with}~|\lambda|}
 \ee
 
 \paragraph{The generic matrix element}
 \be\la{eq.genericme}
-I_\mathcal{O}(A',\ve{\lambda}',\ve{\theta}',A,\ve{\lambda},\ve{\theta};P):=
-\bra{A',\ve{\lambda}',\ve{\theta}'}~\hat{\mathcal{O}}~\hat{P}~
-\ket{A,\ve{\lambda},\ve{\theta}}
+I_\mathcal{O}(A',\ve{\lambda}',A,\ve{\lambda};P):=
+\me{A',\ve{\lambda}'}{\hat{\mathcal{O}}\otimes\hat{\mathcal{I}}}
+{\hat{P}(A),\hat{P}(\ve{\lambda})}=\me{A'}{\hat{\mathcal{O}}}
+{\hat{P}(A)}\cdot\me{\ve{\lambda}'}{\hat{\mathcal{I}}}
+{\hat{P}(\ve{\lambda})}
 \ee
-with $\hat{P}\in\mathcal{A}$ and
+with $\hat{P}\in\mathcal{A}$, hence,
+\be\la{eq.perma}\hat{P}(A)=T_P^\intercal\,A\,T_P:=A^P\;\;\;.\ee
 \be\la{eq.oplist}
 \hat{\mathcal{O}}\in\left\lbrace
 \mathbb{1}~;~
@@ -193,27 +201,57 @@ with $\hat{P}\in\mathcal{A}$ and
 \right\rbrace\
 \ee
 
+\newpage
+
+\begin{landscape}
 \paragraph{The matrix elements}
 
 \be\la{tab.mes}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{2.4}
-\begin{array}{l|c}
+\begin{array}{l|c|c}
 \hline
 \hat{\mathcal{O}} & 
-I_\mathcal{O}(A',\ve{\lambda}',\ve{\theta}',A,\ve{\lambda},\ve{\theta};P) \\
+\me{A'}{\hat{\mathcal{O}}}{\hat{P}(A)} &
+\me{\ve{\lambda}'}{\hat{\mathcal{I}}}{\hat{P}(\ve{\lambda})} \\
 \hline
-\mathbb{1}                                                           &  \\
-\ve{p}^\intercal\mathbb{1}_{(3N\times 3N)}\ve{p}                     &  \\
-\sumin q_iL_i^z=q_i~\left(x_i\partial_{y_i}-y_i\partial_{x_i}\right) &  0\\
-\sumin q_i(x_i^2+y_i^2+z_i^2)                                        &  \\
-\sumin q_i\sigma_i^z                                                 &  \\
+% identity
+\mathbb{1}:=\mathbb{1}_{\ve{r}}^P\cdot\mathbb{1}_{\ve{s}}^P           &
+\left(\frac{(2\pi)^{3N}}
+{\det\mathbb{A}_x\det\mathbb{A}_y\det\mathbb{A}_z}\right)^\frac{1}{2} &
+\sum\limits_{\alpha,n}^{|\lambda|,N_\text{int}}\lambda_\alpha C^n_\alpha
+\overlap{\ve{s}^n;\ve{t}^n}{\hat{P}(\ve{s}^n);\hat{P}(\ve{t}^n)} \\
+% E_kin
+\frac{1}{2}\ve{p}^\intercal\mathbb{1}_{3N}\ve{p}
+=-\frac{\hbar^2}{2}\ve{\nabla}^\intercal\mathbb{1}_{3N}\ve{\nabla}&
+\frac{\hbar^2}{2}~\mathbb{1}_{\ve{r}}^P~\prodcart(A_c)_{im}(\mathbb{A}^{-1}_c)_{mn}(A^P_c)_{ni} & \mathbb{1}_{\ve{s}}^P\\
+% Lz from background field
+\sumin q_iL_i^z=q_i~\left(x_i\partial_{y_i}-y_i\partial_{x_i}\right) &  0 &
+\mathbb{Q}^P_{\ve{s}}:=\sumin\sum\limits_{\alpha,n}^{|\lambda|,N_\text{int}}
+\underbrace{(\hat{P}[\ve{t}^n])_i}_{=q_{P(i)}} \lambda_\alpha C^n_\alpha
+\overlap{\ve{s}^n;\ve{t}^n}{\hat{P}(\ve{s}^n);\hat{P}(\ve{t}^n)}
+\\
+% osci pot from background field
+\sumin q_i(\omega_xx_i^2+\omega_yy_i^2+\omega_zz_i^2)                &
+\mathbb{1}_{\ve{r}}^P\prodcart\omega_c\sumin(\mathbb{A}_c^{-1})_{ii} & \mathbb{Q}^P_{\ve{s}} \\
+% magnetic moment 
+\sumin q_i\sigma_i^z                                                 &
+\mathbb{1}_{\ve{r}}^P &
+\sumin\sum\limits_{\alpha,n}^{|\lambda|,N_\text{int}}
+\underbrace{\left(\hat{P}[\ve{t}^n]\right)_i}_{=q_{P(i)}}~
+\underbrace{\left(\hat{P}[\ve{s}^n]\right)_i}_{=s^z_{P(i)}}
+\lambda_\alpha C^n_\alpha
+\overlap{\ve{s}^n;\ve{t}^n}{\hat{P}(\ve{s}^n);\hat{P}(\ve{t}^n)}  \\
+% EFTnoPi LO two-body contact
 \sumijn e^{-\frac{\Lambda^2}{4}(\ve{r}_i-\ve{r}_j)^2}                &  \\
+% EFTnoPi LO three-body contact
+\sumijk e^{-\frac{\Lambda^2}{4}((\ve{r}_i-\ve{r}_j)^2+(\ve{r}_i-\ve{r}_k)^2)}                &  \\
 \hline
 \end{array}
 \ee
 with
 \begin{align}
-\mathbb{A}_x&=&A'_x
+\mathbb{A}_x=&A'_x+A^P_x
 \end{align}
+\end{landscape}
 \end{document}

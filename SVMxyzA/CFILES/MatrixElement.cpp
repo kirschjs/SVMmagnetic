@@ -58,48 +58,46 @@ MatrixElement::MatrixElement(Input &input)
     PrepareSpinIsospinME(input);
     PreparePotential(input);
     PrepareMagneticSpinME(input);
-    PrepareMagneticME(input);
     PrepareMagneticMePair(input);
                      
 }
 //=============================================================================
-double MatrixElement::overlap(BasisState &state1, BasisState &state2)
-    {
-     MatrixXd A1x  = state1.Ax;
-     MatrixXd A1y  = state1.Ay;
-     MatrixXd A1z  = state1.Az;
-     int      its1 = state1.ts;
+double MatrixElement::overlap(BasisState &state1, BasisState &state2){
+    MatrixXd A1x  = state1.Ax;
+    MatrixXd A1y  = state1.Ay;
+    MatrixXd A1z  = state1.Az;
+    int      its1 = state1.ts;
 
-     MatrixXd A2_0x = state2.Ax;
-     MatrixXd A2_0y = state2.Ay;
-     MatrixXd A2_0z = state2.Az;
-     int      its2  = state2.ts;
+    MatrixXd A2_0x = state2.Ax;
+    MatrixXd A2_0y = state2.Ay;
+    MatrixXd A2_0z = state2.Az;
+    int      its2  = state2.ts;
 
-     MatrixXd A2x;
-     MatrixXd A2y;
-     MatrixXd A2z;
+    MatrixXd A2x;
+    MatrixXd A2y;
+    MatrixXd A2z;
 
-     double detx, dety, detz;
-     long double x;
+    double detx, dety, detz;
+    long double xx;
 
-     double overlap=0;
+    double overlap=0;
 
-     int ijts = its1*nts_states+its2;
-     for (int iperm = 0; iperm < nPerm; iperm++)   //sum over permutation
-	 {
-	     A2x = PM[iperm].transpose() * A2_0x * PM[iperm];
-	     A2y = PM[iperm].transpose() * A2_0y * PM[iperm];
-	     A2z = PM[iperm].transpose() * A2_0z * PM[iperm];
-	     
-	     detx=(A1x+A2x).determinant();
-	     dety=(A1y+A2y).determinant();
-	     detz=(A1z+A2z).determinant();
+    int ijts = its1*nts_states+its2;
+    for (int iperm = 0; iperm < nPerm; iperm++){   //sum over permutation
+	
+	A2x = PM[iperm].transpose() * A2_0x * PM[iperm];
+	A2y = PM[iperm].transpose() * A2_0y * PM[iperm];
+	A2z = PM[iperm].transpose() * A2_0z * PM[iperm];
+	
+	detx=(A1x+A2x).determinant();
+	dety=(A1y+A2y).determinant();
+	detz=(A1z+A2z).determinant();
       
-	     x=1.0/sqrt(detx*dety*detz);
+	xx=1.0/sqrt(detx*dety*detz);
 //	     overlap = overlap + parity[iperm]* stme[iperm*nPairs*nop] *x;
-	     overlap = overlap + parity[iperm]* stmeop[ijts].perm[iperm].op2b[0].me(0) *x;
-	 }
-     return overlap;
+	overlap = overlap + parity[iperm]* stmeop[ijts].perm[iperm].op2b[0].me(0) *xx;
+    }
+    return overlap;
 }
 
 //==============================================================================================
@@ -146,6 +144,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     int i1, j1, k1;
     //====================================
     int ijts = its1*nts_states+its2;
+    //====================================
     for (int iperm = 0; iperm < nPerm; iperm++)   //sum over permutation
     {
     	A2x = PM[iperm].transpose() * A2_0x * PM[iperm];
@@ -169,9 +168,9 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 //     	KinEnergy = KinEnergy + parity[iperm] * stme[iperm*nPairs*nop] *(TTx.trace()+TTy.trace()+TTz.trace())*x;
       	KinEnergy = KinEnergy + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
 	    *(TTx.trace()+TTy.trace()+TTz.trace())*x;
+	//==================================================================================
       	// Magnetic Energy (single-particle version)
-      	for(int ipar = 0 ; ipar < npar ; ipar++)
-      	{
+      	for (int ipar = 0 ; ipar < npar ; ipar++){
 	    MagneticEnergyT = MagneticEnergyT + parity[iperm] * 
 		magnetic_charge_me[iperm*npar+ipar] * (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)) * x;
       	}
@@ -200,7 +199,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    }
 	    
 	} 
-
+	
 	//====================MagneticSpinEnergy============================================
 		
 	for (int ipar = 0; ipar < npar; ipar++){   //sum over single particles
@@ -225,47 +224,48 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	}
 		//===============================================================
 
-   		if (npar>2)
-   		{
-	    	PotEnergy3BP = 0;
-	  		for (int i = 0; i < npar; i++){
-	      		for (int j = i + 1; j < npar; j++){
-		  			for (int k = j + 1; k < npar; k++){
-		      			for (int cyc = 0; cyc < 3; cyc++)
-						{
-							if (cyc == 0) {i1 = i; j1 = j; k1 = k;}
-							if (cyc == 1) {i1 = j; j1 = k; k1 = i;}
-							if (cyc == 2) {i1 = k; j1 = i; k1 = j;}
-							Cik = v.SingleParticle(i1, k1);
-							Cjk = v.SingleParticle(j1, k1);
+	if (npar>2){
+	    PotEnergy3BP = 0;
+	    for (int i = 0; i < npar; i++){
+		for (int j = i + 1; j < npar; j++){
+		    for (int k = j + 1; k < npar; k++){
+			for (int cyc = 0; cyc < 3; cyc++)
+			    {
+				if (cyc == 0) {i1 = i; j1 = j; k1 = k;}
+				if (cyc == 1) {i1 = j; j1 = k; k1 = i;}
+				if (cyc == 2) {i1 = k; j1 = i; k1 = j;}
+				Cik = v.SingleParticle(i1, k1);
+				Cjk = v.SingleParticle(j1, k1);
 
-							Bx(0,0) = Cik.transpose()*InvAAx*Cik;
-							Bx(0,1) = Cik.transpose()*InvAAx*Cjk;
-							Bx(1,0) = Cjk.transpose()*InvAAx*Cik;
-							Bx(1,1) = Cjk.transpose()*InvAAx*Cjk;
+				Bx(0,0) = Cik.transpose()*InvAAx*Cik;
+				Bx(0,1) = Cik.transpose()*InvAAx*Cjk;
+				Bx(1,0) = Cjk.transpose()*InvAAx*Cik;
+				Bx(1,1) = Cjk.transpose()*InvAAx*Cjk;
 
-			  				By(0,0) = Cik.transpose()*InvAAy*Cik;
-			  				By(0,1) = Cik.transpose()*InvAAy*Cjk;
-			  				By(1,0) = Cjk.transpose()*InvAAy*Cik;
-			  				By(1,1) = Cjk.transpose()*InvAAy*Cjk;
+				By(0,0) = Cik.transpose()*InvAAy*Cik;
+				By(0,1) = Cik.transpose()*InvAAy*Cjk;
+				By(1,0) = Cjk.transpose()*InvAAy*Cik;
+				By(1,1) = Cjk.transpose()*InvAAy*Cjk;
 
-			  				Bz(0,0) = Cik.transpose()*InvAAz*Cik;
-			  				Bz(0,1) = Cik.transpose()*InvAAz*Cjk;
-			  				Bz(1,0) = Cjk.transpose()*InvAAz*Cik;
-			  				Bz(1,1) = Cjk.transpose()*InvAAz*Cjk;
+				Bz(0,0) = Cik.transpose()*InvAAz*Cik;
+				Bz(0,1) = Cik.transpose()*InvAAz*Cjk;
+				Bz(1,0) = Cjk.transpose()*InvAAz*Cik;
+				Bz(1,1) = Cjk.transpose()*InvAAz*Cjk;
 
-                        	z=1/sqrt((2.0*apot3b*Bx + I).determinant()*(2.0*apot3b*By + I).determinant()*(2.0*apot3b*Bz + I).determinant());                          
-			  				PotEnergy3BP = PotEnergy3BP + z*x;
-						}
-		    		}
-				}
-	    	}
-//	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stme[iperm*nPairs*nop] *PotEnergy3BP;
-	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
-			    *PotEnergy3BP;
+                        	z=1/sqrt(  (2.0*apot3b*Bx + I).determinant()
+					 * (2.0*apot3b*By + I).determinant()
+					  *(2.0*apot3b*Bz + I).determinant());                          
+				PotEnergy3BP = PotEnergy3BP + z*x;
+			    }
+		    }
 		}
+	    }
+//	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stme[iperm*nPairs*nop] *PotEnergy3BP;
+	    PotEnergy3B = PotEnergy3B + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
+		*PotEnergy3BP;
+	}
 	  	//====================================
-    	}    
+    }    
 
     PotEnergy3B     = vpot3b             * PotEnergy3B;
 
@@ -358,16 +358,8 @@ void MatrixElement::PrepareSpinIsospinME(Input &input){
     }
     }
 }
-//==============================PrepareMagneticME===============================================
-void MatrixElement::PrepareMagneticME(Input &input){
-    magnetic_me.resize(npar*nPerm);
-    for (int ipar = 0; ipar < npar; ipar++){
-	for (int iperm = 0; iperm < nPerm; iperm++){
-            magnetic_me[iperm*npar+ipar] = One_magnetic_me(ipar, PV[iperm], 1);
-	}
-    }
-}
-//=======PrepareMagneticSpinME===========
+//=============================================================================
+//   PrepareMagneticSpinME
 void MatrixElement::PrepareMagneticSpinME(Input &input){
     magnetic_spin_me.resize(npar*nPerm);
     magnetic_charge_me.resize(npar*nPerm);

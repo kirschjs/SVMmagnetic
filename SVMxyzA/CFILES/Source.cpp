@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "SVM.h"
 #include "MatrixElement.h"
+#include "BasisState.h"
 
 #include <iostream>
 #include <cmath>
@@ -25,23 +26,29 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-clock_t begin = clock();
-	string jobname;
-	if (argc < 2) { jobname = "2H_EFT"; }
-	else { jobname = argv[1]; } 
+    clock_t begin = clock();
+    string jobname;
+    if (argc < 2) { jobname = "2H_EFT"; }
+    else { jobname = argv[1]; } 
 
 /* Read and print input data */
-	Input input("./input/"+jobname+".inp");
-	input.print();
+    std::size_t found;
+    found=jobname.find(".inp");
+    if (found != std::string::npos) {jobname = jobname.substr(0,found);}
+    found=jobname.find("input/");
+    if (found != std::string::npos) {jobname = jobname.substr(found+6);}
+    cout << " jobname = " << jobname << "\n";
+    Input input("./input/"+jobname+".inp");
+    input.print();
 //===========
-        ifstream  srcc("./input/"+jobname+".inp");
-        cout<< srcc.rdbuf();
+    ifstream  srcc("./input/"+jobname+".inp");
+    cout<< srcc.rdbuf();
 
 
-        ifstream  src("./input/"+jobname+".inp");
-        ofstream  dst("./output/"+jobname+".txt");
-        dst << src.rdbuf();
-        dst.close();
+    ifstream  src("./input/"+jobname+".inp");
+    ofstream  dst("./output/"+jobname+".txt");
+    dst << src.rdbuf();
+    dst.close();
 
 //===========
 //===========
@@ -51,43 +58,45 @@ clock_t begin = clock();
 
 
 /* Initialize the random numbr generator */
-	Rand rand(input.irand);
+    Rand rand(input.irand);
 /* Initialize SVM  */
-	printf("\n\t Initialize SVM \n");
-	SVM svm(rand, input);
-	vector<MatrixXd> NewState;
-	vector<vector<MatrixXd>> Basis;
-	NewState = svm.FirstNewState();
+    printf("\n\t Initialize SVM \n");
+    SVM svm(rand, input);
+    BasisState NewState;
+    vector<BasisState> Basis;
+	
+    NewState = svm.FirstNewState();
+//    NewState.print();
 
-	if (NewState[0](0, 0) == 2000)
-	  {
-	  cout << "finding new state with appropriate overloop failed" << endl << endl;
-	  return 0;
-	  }
+    if (NewState.notdefined) {  
+	cout << NewState.notdefined << "\n";
+	cout << "finding new state with appropriate overloop failed" << endl << endl;
+	return 0; }
 /* start SVM iterations */
-	Basis.push_back(NewState);
-	svm.UpdateNorm(Basis);
-	svm.UpdateHamiltonian(Basis);
-	MatrixXd Norm;
-	MatrixXd H;
-	MatrixXd C;
-	VectorXd D;
-	double E;
-	double EE;
-        int n_accuracy=1;
-        vector<double> dE;
-	GeneralizedSelfAdjointEigenSolver<MatrixXd> ges;
-	printf("\t Start SVM iters\n\n");
+    Basis.push_back(NewState);
+    svm.UpdateNorm(Basis);
+    svm.UpdateHamiltonian(Basis);
+    MatrixXd Norm;
+    MatrixXd H;
+    MatrixXd C;
+    VectorXd D;
+    double E;
+    double EE;
+    int n_accuracy=1;
+    vector<double> dE;
+    GeneralizedSelfAdjointEigenSolver<MatrixXd> ges;
+    printf("\t Start SVM iters\n\n");
 	int itr = 1;
 	while (itr < input.maxbasis)
 	  {
 	    Norm = svm.NormMatrix(Basis);
 	    H    = svm.HamiltonianMatrix(Basis);
+//	    cout << "H\n" << H    << "\n";
+//	    cout << "N\n" << Norm << "\n";
 	    ges.compute(H, Norm);
 	    C = ges.eigenvectors();
 	    D = ges.eigenvalues();
 	    E = D.minCoeff();
-
             if (itr == 1)  EE = E + abs(E / 2);
             dE.push_back(abs((EE - E) / E));
 	    printf("\t iter = %4d     E = %14.8f    dE = %14.8f \n",itr,E,dE[itr-1]);
@@ -103,12 +112,10 @@ clock_t begin = clock();
             if(dE[itr-1] < pow(10, -5)) n_accuracy++;
             //if(n_accuracy==10) break;
             NewState = svm.NewState(Basis, C, D, E, EE);
-	    if (NewState[0](0, 0) == 2000)
-	      {
-		cout << "finding new state with lower energy failed" << endl << endl;
-		break;
-	      }	   
-	    Basis.push_back(NewState);
+	    if (NewState.notdefined){
+	      cout << "Failed to find a new state with lower energy" << endl << endl;
+	      break;}	   
+	    Basis[itr] = NewState;
 	    svm.UpdateNorm(Basis);
 	    svm.UpdateHamiltonian(Basis);
             EE = E;  
@@ -130,7 +137,6 @@ clock_t begin = clock();
                   cout<<endl;
                }
            itr = itr + 1;
-
 	  }
 
 clock_t end = clock();

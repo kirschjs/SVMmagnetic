@@ -5,7 +5,7 @@
 #include <string>
 #include <stdio.h>
 #include <math.h>
-
+#include "BasisState.h"
 
 const int ndpterms = 10;
 const double pi = 4.0*atan(1.0);
@@ -45,29 +45,32 @@ struct SpinState {
 class Input
 {
 private:
-	int    rdai(std::istringstream& iss);
-	double rdaf(std::istringstream& iss);
-	void   rdpot(std::string& word, std::istringstream& iss);
-	void   rdts(std::string& word, std::istringstream& iss);
+    int    rdai(std::istringstream& iss);
+    double rdaf(std::istringstream& iss);
+    void   rdpot(std::string& word, std::istringstream& iss);
+    void   rdts(std::string& word, std::istringstream& iss);
+    void   rdts_state(std::istringstream& iss);
 
 public:
-	Input(std::string const &jobname);
-	~Input();
-	void print();
-	int  npar, irand, keycontinue, bosefermi;
-	int  maxbasis, mm0, kk0;
-	int dmax;
-        double eB, momega, eBspin;
-	double h2m, rndmin, rndmax;
-	std::vector<double> mass;
-	std::vector<double> charges;
-	int nop, npt;
-	std::vector<potentialop> potop;
-	double vpot3b, apot3b;
-	SpinState spin;
-	IsospinState isospin;
-	FILE *printfile;
-	std::string jobname;
+    Input(std::string const &jobname);
+    ~Input();
+    void print();
+    int  npar, irand, keycontinue, bosefermi;
+    int  maxbasis, mm0, kk0;
+    int dmax;
+    double eB, momega, eBspin;
+    double h2m, rndmin, rndmax;
+    std::vector<double> mass;
+    std::vector<double> charges;
+    int nop, nop1b=1, nop2b, npt;
+    std::vector<potentialop> potop;
+    double vpot3b, apot3b;
+    SpinState spin;
+    IsospinState isospin;
+    FILE *printfile;
+    std::string jobname;
+    int nts_states;
+    std::vector<SpinIsospinState> ts_states;
 };
 
 #endif 

@@ -2,12 +2,14 @@
 #include "Input.h"
 #include "MatrixElement.h"
 #include "Rand.h"
+#include "BasisState.h"
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <Eigen> 
 using namespace Eigen;
 
+//=============================================================================
 SVM::SVM(Rand &r, Input &input) :rr(r), me(input)
 {
 	N = input.npar;
@@ -20,19 +22,16 @@ SVM::SVM(Rand &r, Input &input) :rr(r), me(input)
 	Hmatrix = MatrixXd::Zero(ndb,ndb);
 	Nmatrix = MatrixXd::Zero(ndb,ndb);
 }
-
 //=============================================================================
-int SVM::CheckOverlap(vector<vector<MatrixXd>> Basis)
+int SVM::CheckOverlap(vector<BasisState> &Basis)
 {
   int itr = Basis.size() - 1;
   float vnorm,vdotv;
   vnorm = Nmatrix(itr,itr);
-//  printf("\t itr = %4d     vnrom = %12.6f \n",itr,vnorm);
   if (vnorm < 1e-8) return 0;
   if (itr > 0){
     for (int i = 0; i < itr; i++){
       vdotv = Nmatrix(itr,i)/sqrt(Nmatrix(i,i)*Nmatrix(itr,itr)) ;
-//      printf("\t\t i = %4d     vdotv = %12.6f \n",i,vdotv);
       if (vdotv > 0.99){
 	return 0;
       }
@@ -41,7 +40,7 @@ int SVM::CheckOverlap(vector<vector<MatrixXd>> Basis)
   return 1;
 }
 //=============================================================================
-double EigenValusEquation(int itr, VectorXd D, VectorXd q, double aa, double xx)
+double EigenValuesEquation(int itr, VectorXd D, VectorXd q, double aa, double xx)
 {
 	double vv = 1;
 	double ww = 1;
@@ -64,8 +63,7 @@ double EigenValusEquation(int itr, VectorXd D, VectorXd q, double aa, double xx)
 	return zz;
 }
 //=============================================================================
-
-double SVM::NewEnergy(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, double E, double EE)
+double SVM::NewEnergy(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double E, double EE)
 {
 	int itr = Basis.size() - 1;
 	VectorXd c = VectorXd::Zero(itr + 1);
@@ -133,12 +131,12 @@ double SVM::NewEnergy(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, do
 	double e1 = E;
 	double e2 = E - abs(0.5*(E - EE));
 	double e3 = E;
-	double Ee1 = EigenValusEquation(itr, D, q, aa, e1);
+	double Ee1 = EigenValuesEquation(itr, D, q, aa, e1);
 	//std::cout << "intial e1= " << e1 << ".   intial e2= " << e2<<endl;
 	while (count < 101)
 	{
 		
-		if (Ee1*EigenValusEquation(itr, D, q, aa, e2) < 0)  break;
+		if (Ee1*EigenValuesEquation(itr, D, q, aa, e2) < 0)  break;
 		else
 		{
 			e1 = e2;
@@ -157,7 +155,7 @@ double SVM::NewEnergy(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, do
 		{
 			e3 = (e1 + e2) / 2;
 			//	std::cout << e3 << "  ";
-			if (EigenValusEquation(itr, D, q, aa, e3)*EigenValusEquation(itr, D, q, aa, e2) < 0)  e1 = e3;
+			if (EigenValuesEquation(itr, D, q, aa, e3)*EigenValuesEquation(itr, D, q, aa, e2) < 0)  e1 = e3;
 			else e2 = e3;
 			count++;
 			if (count > 100)  break;
@@ -170,7 +168,7 @@ double SVM::NewEnergy(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, do
 
 }
 
-
+//=============================================================================
 MatrixXd SVM::Dmatrix()
 {
 	MatrixXd d = MatrixXd::Zero(N, N);
@@ -184,7 +182,7 @@ MatrixXd SVM::Dmatrix()
 	}
 	return d;
 }
-
+//=============================================================================
 MatrixXd SVM::A(MatrixXd d)
 {
 	MatrixXd A = MatrixXd::Zero(N, N);
@@ -214,75 +212,50 @@ MatrixXd SVM::A(MatrixXd d)
 
 
 //=============================================================================
-vector<MatrixXd> SVM::FirstNewState()
-{
-  vector<MatrixXd> NewState;
+BasisState SVM::FirstNewState(){
+    VectorXd ts(1); ts(0)=1.;
+    BasisState NewState(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
 
-  NewState.push_back(A(Dmatrix())); //x axis
-  NewState.push_back(A(Dmatrix()));  //y axis
-  NewState.push_back(A(Dmatrix()));  //z axis
-
-
-
-  double e_overlap=0;
-  int count=0;
-  while (count<10)
-    {
-      count++;
-      NewState[0] = A(Dmatrix());
-      NewState[1] = A(Dmatrix());
-      NewState[2] = A(Dmatrix());
-      e_overlap = me.overlap(NewState, NewState);
-      if(e_overlap>1e-8) break;
+    double e_overlap=0;
+    int count=0;
+    while (count<10){
+	count++;
+	VectorXd ts(1); ts(0)=1.;
+	NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
+	e_overlap = me.overlap(NewState, NewState);
+	if(e_overlap>1e-8) break;
     }
 
-  if(count >= 8)
-    {
-      NewState[0](0, 0) = 2000;
-      return NewState;
-    }
-  else
-    {
-      double MinE = me.energy(NewState, NewState) / e_overlap;
-      double NewE;
-      vector<MatrixXd> State(NewState.size());
-      State = NewState;
-      count = 0;
-      while (count < 1000)
-	{
-	  count++;
-	  NewState[0] = A(Dmatrix());
-          NewState[1] = A(Dmatrix());
-          NewState[2] = A(Dmatrix());
-	  e_overlap = me.overlap(NewState, NewState);
-	  if (e_overlap < 1e-8) continue;
-	  NewE = me.energy(NewState, NewState) / e_overlap;
-	  if (NewE < MinE)
-	    {
-	      MinE = NewE;
-	      State = NewState;
-	    }
-	}
-      
-      return State;
-    }
+    if(count >= 8){NewState.notdefined = true; return NewState;}
 
+    double MinE = me.energy(NewState, NewState) / e_overlap;
+    double NewE;
+    BasisState State;
+    State = NewState;
+    count = 0;
+    while (count < 1000){
+	count++;
+	VectorXd ts(1); ts(0)=1.;
+	NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
+	e_overlap = me.overlap(NewState, NewState);
+	if (e_overlap < 1e-8) continue;
+	NewE = me.energy(NewState, NewState) / e_overlap;
+	if (NewE < MinE){ MinE = NewE; State = NewState;}
+    }
+    return State;
 }
 
 //=============================================================================
-vector<MatrixXd> SVM::NewState(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, double E, double EE)
+BasisState SVM::NewState(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double E, double EE)
 {
 
-        vector<MatrixXd> NewState;
+        BasisState NewState;
 
-	MatrixXd dx = Dmatrix(); //x axis
-	NewState.push_back(A(dx));
-
+	MatrixXd dx = Dmatrix();  //x axis
 	MatrixXd dy = Dmatrix();  //y axis
-	NewState.push_back(A(dy));
-
 	MatrixXd dz = Dmatrix();  //z axis
-	NewState.push_back(A(dz));
+	VectorXd ts(1); ts(0)=1.;
+	NewState.set(A(dx),A(dy),A(dz),ts);
 
 	Basis.push_back(NewState);
 	UpdateNorm(Basis);
@@ -290,8 +263,7 @@ vector<MatrixXd> SVM::NewState(vector<vector<MatrixXd>> Basis, MatrixXd C, Vecto
         
         int Bsize=Basis.size()-1;
 
-	int size = NewState.size();
-	vector<MatrixXd> State(size); 
+	BasisState State; 
 
         MatrixXd mindx=dx;
         MatrixXd mindy=dy;
@@ -306,107 +278,89 @@ vector<MatrixXd> SVM::NewState(vector<vector<MatrixXd>> Basis, MatrixXd C, Vecto
         count4=0; 
         double minE, NewE;
 
-while(count4<=mm0)
-{
-        ix=0; jx=1; kkx=0;
-        iy=0; jy=1; kky=0;
-        iz=0; jz=1; kkz=0;
-        count1=0; count2=0; count3=0; 
-        minE=E; NewE=E;       
+	while(count4<=mm0){
+	    ix=0; jx=1; kkx=0;
+	    iy=0; jy=1; kky=0;
+	    iz=0; jz=1; kkz=0;
+	    count1=0; count2=0; count3=0; 
+	    minE=E; NewE=E;       
 
-	while (count1 < 3*mm0*kk0*N*(N - 1)/2)
-	{
-               
-		if (CheckOverlap(Basis) == 1)
-		{
-			NewE = NewEnergy(Basis, C, D, E, EE);
-			if (NewE < minE) {
-				minE = NewE;
-                                xx=1;
-                                State=NewState;
+	    while (count1 < 3*mm0*kk0*N*(N - 1)/2){
+		if (CheckOverlap(Basis) == 1){
+		    NewE = NewEnergy(Basis, C, D, E, EE);
+		    if (NewE < minE) {
+		      minE = NewE;
+		      xx=1;
+		      State=NewState;
 
-                                mindx=dx;
-                                mindy=dy;
-                                mindz=dz;
-			}
-			count2 = 0;
+		      mindx=dx;
+		      mindy=dy;
+		      mindz=dz;
+		    }
+		    count2 = 0;
 		}
                 count1++;
-             //============================
-
-                    if(count1%kk0==0)  
-                        { 
-                           dx=mindx;
-                           dy=mindy;
-                           dz=mindz;
-                        }
-
-             //============================
-		count2++;
-		if (count2 > 200) {
-                        State[0]=NewState[0];
-			State[0](0, 0) = 2000;
-			break;
+		//============================
+		if(count1%kk0==0){ 
+		  dx=mindx;
+		  dy=mindy;
+		  dz=mindz;
 		}
-            //============x===================
-               count3++;
-                if(count3<=kk0*N*(N - 1)/2)
-                {                   
-		      dx(ix,jx)= bmin + (bmax - bmin)*rr.doub();
-		      dx(jx, ix) = dx(ix, jx);
-		      kkx++;
-		      if (kkx == kk0) 
-                      {
-			  kkx = 0;
-			  jx++;
-			  if (jx == N)
-                          {
-				ix++;
-				if (ix == N - 1) ix = 0;
-				jx = ix + 1;
-			  }
+		//============================
+		count2++;
+		if (count2 > 200){
+		  State.Ax=NewState.Ax;
+		  State.notdefined = true;
+		  break;
+		}
+		//============ Ax ===================
+		count3++;
+                if(count3<=kk0*N*(N - 1)/2){                   
+		    dx(ix,jx)= bmin + (bmax - bmin)*rr.doub();
+		    dx(jx, ix) = dx(ix, jx);
+		    kkx++;
+		    if (kkx == kk0){
+		      kkx = 0;
+		      jx++;
+		      if (jx == N){
+			ix++;
+			if (ix == N - 1) ix = 0;
+			jx = ix + 1;
 		      }
-		      NewState[0]= A(dx);
+		    }
+		    NewState.Ax = A(dx);
                 }
-                //================end x===================
-                //==================y=====================
-                else if(count3<=(2*kk0*N*(N - 1)/2))
-                {                   
-		      dy(iy,jy)= bmin + (bmax - bmin)*rr.doub();
-		      dy(jy, iy) = dy(iy, jy);
-		      kky++;
-		      if (kky == kk0) 
-                      {
-			  kky = 0;
-			  jy++;
-			  if (jy == N)
-                          {
-				iy++;
-				if (iy == N - 1) iy = 0;
-				jy = iy + 1;
-			  }
-		      }
-		      NewState[1]= A(dy);
+		//============ Ay ===================
+                else if(count3<=(2*kk0*N*(N - 1)/2)){                   
+		    dy(iy,jy)= bmin + (bmax - bmin)*rr.doub();
+		    dy(jy, iy) = dy(iy, jy);
+		    kky++;
+		    if (kky == kk0){
+			kky = 0;
+			jy++;
+			if (jy == N){
+			  iy++;
+			  if (iy == N - 1) iy = 0;
+			  jy = iy + 1;
+			}
+		    }
+		    NewState.Ay = A(dy);
                 }
-                //================end y===================
-                //==================z=====================
-                else
-                {                   
-		      dz(iz,jz)= bmin + (bmax - bmin)*rr.doub();
-		      dz(jz, iz) = dz(iz, jz);
-		      kkz++;
-		      if (kkz == kk0) 
-                      {
-			  kkz = 0;
-			  jz++;
-			  if (jz == N)
-                          {
-				iz++;
-				if (iz == N - 1) iz = 0;
-				jz = iz + 1;
-			  }
-		      }
-		      NewState[2]= A(dz);
+		//============ Az ===================
+                else{                   
+		  dz(iz,jz)= bmin + (bmax - bmin)*rr.doub();
+		  dz(jz, iz) = dz(iz, jz);
+		  kkz++;
+		  if (kkz == kk0){ 
+		    kkz = 0;
+		    jz++;
+		    if (jz == N){
+		      iz++;
+		      if (iz == N - 1) iz = 0;
+		      jz = iz + 1;
+		    }
+		  }
+		  NewState.Az = A(dz);
                 }
                 //================end z===================
                 if(count3==3*kk0*N*(N - 1)/2) count3=0;
@@ -420,23 +374,19 @@ while(count4<=mm0)
          dx = Dmatrix();
          dy = Dmatrix();
          dz = Dmatrix();
-         NewState[0]=A(dx);
-         NewState[1]=A(dy);
-         NewState[2]=A(dz);
-         Basis[Bsize] = NewState;
+	 VectorXd ts(1); ts(0)=1.;
+         NewState.set(A(dx),A(dy),A(dz),ts);
+	 Basis[Bsize]=NewState;
 	 UpdateNorm(Basis);
 	 UpdateHamiltonian(Basis);
-         State[0]=NewState[0]; State[0](0, 0) = 2000;
+         State.Ax=NewState.Ax; State.notdefined = true;
          }
          if(xx==1) break;
-} //end while(count4<5)
-//cout<<"count4=  "<<count4<<endl;
+} 
 	return State;
 }
-
 //=============================================================================
-//=============================================================================
-MatrixXd SVM::NormMatrix(vector<vector<MatrixXd>> Basis)
+MatrixXd SVM::NormMatrix(vector<BasisState> &Basis)
 {
 	int itr = Basis.size();
 	MatrixXd Norm = MatrixXd::Zero(itr, itr);
@@ -451,7 +401,7 @@ MatrixXd SVM::NormMatrix(vector<vector<MatrixXd>> Basis)
 	return Norm;
 }
 //=============================================================================
-MatrixXd SVM::HamiltonianMatrix(vector<vector<MatrixXd>> Basis)
+MatrixXd SVM::HamiltonianMatrix(vector<BasisState> &Basis)
 {
 	int itr = Basis.size();
 	MatrixXd H = MatrixXd::Zero(itr, itr);
@@ -466,17 +416,19 @@ MatrixXd SVM::HamiltonianMatrix(vector<vector<MatrixXd>> Basis)
 	return H;
 }
 //=============================================================================
-void SVM::UpdateNorm(vector<vector<MatrixXd>> Basis)
+void SVM::UpdateNorm(vector<BasisState> &Basis)
 {
+//  cout << Basis.size() << "\n";
   int ncur = Basis.size()-1;
   for (int n1 = 0; n1 <= ncur; n1++)
     {
+//      cout << Basis.size() << " " << n1 << "\n";
       Nmatrix(n1, ncur) = me.overlap(Basis[n1], Basis[ncur]);
       Nmatrix(ncur, n1) = Nmatrix(n1, ncur);
     }   
 }
 //=============================================================================
-void SVM::UpdateHamiltonian(vector<vector<MatrixXd>> Basis)
+void SVM::UpdateHamiltonian(vector<BasisState> &Basis)
 {
   int ncur = Basis.size()-1;
   for (int n1 = 0; n1 <= ncur; n1++)

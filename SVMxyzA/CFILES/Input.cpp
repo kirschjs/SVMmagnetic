@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "BasisState.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -9,96 +10,101 @@ using namespace std;
   
 Input::Input(string const &jobname_) : jobname(jobname_)
 {
-	size_t notfound = string::npos;
-	//ofstream myfile;
-	//myfile.open("example.txt");
-	//myfile << "Writing this to a file.\n";
-
-	ifstream inputfile;
-	std::string buffer, line, word;
-
-	/*                  open inputfile  */
-	cout << "\t open input file " << jobname << endl;
-	inputfile.open(jobname);
-
-
-	/*    read inputfile and remove all comment lines  */
-	buffer.clear();
-	while (getline(inputfile, line))
+    size_t notfound = string::npos;
+    //ofstream myfile;
+    //myfile.open("example.txt");
+    //myfile << "Writing this to a file.\n";
+    
+    ifstream inputfile;
+    std::string buffer, line, word;
+    
+    /*                  open inputfile  */
+    cout << "\t open input file " << jobname << endl;
+    inputfile.open(jobname);
+    
+    
+    /*    read inputfile and remove all comment lines  */
+    buffer.clear();
+    while (getline(inputfile, line))
 	{
-		int ignore = line.find('!');
-		if (ignore != notfound)
-			line = line.substr(0, ignore);
-		if (line.length() == 0)
-			line = " ";
-		buffer.append(line);
+	    int ignore = line.find('!');
+	    if (ignore != notfound)
+		line = line.substr(0, ignore);
+	    if (line.length() == 0)
+		line = " ";
+	    buffer.append(line);
 	}
-	//myfile << buffer << endl;
-	//myfile << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+    //myfile << buffer << endl;
+    //myfile << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 
-	/*                  remove all '=' signs from buffer         */
-	std::replace(buffer.begin(), buffer.end(), '=', ' ');
-	//myfile << buffer << endl;
-	//myfile << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-
-	/*                  initialize some variables */
-	dmax = 0;
-	vpot3b = 0. ; apot3b = 0.;
-	/*                  read data from buffer */
-	istringstream iss(buffer);
-	while (iss >> word)
-	{
-		//myfile << "Input read: " << word << endl;
-		if (word == "npar") {
-			npar = rdai(iss);
-			mass.resize(npar);
-			charges.resize(npar);
-		}
-		else if (word == "h2m") h2m = rdaf(iss);
-		else if (word == "hh" ) h2m = rdaf(iss);
-                else if (word == "eB" ) eB = rdaf(iss);  
-                else if (word == "momega" ) momega = rdaf(iss); 
-                else if (word == "eBspin") eBspin = rdaf(iss);
-		else if (word == "dmax") dmax = rdai(iss);
-		else if (word == "bmin") rndmin = rdaf(iss);
-		else if (word == "bmax") rndmax = rdaf(iss);
-		else if (word == "irand") irand = rdai(iss);
-		else if (word == "ibf") bosefermi = rdai(iss);
-		else if (word == "ico") keycontinue = rdai(iss);
-		else if (word == "mnb") maxbasis = rdai(iss);
-		else if (word == "mm0") mm0 = rdai(iss);
-		else if (word == "kk0") kk0 = rdai(iss);
-		else if (word == "vpot3b") vpot3b = rdaf(iss);
-		else if (word == "apot3b") apot3b = rdaf(iss);
-		else if (word == "nop") { nop = rdai(iss); potop.resize(nop); }
-		else if (word == "npt") npt = rdai(iss);
-		else if (word.find("xm") != notfound) {
-			for (int i = 0; i < npar; i++) mass[i] = rdaf(iss);
-		}
-		else if (word.find("z") != notfound) {
-			for (int i = 0; i < npar; i++) charges[i] = rdaf(iss);
-		}
-		else if (word.find("vpot") != notfound) rdpot(word, iss);
-		else if (word.find("apot") != notfound) rdpot(word, iss);
-		else if (word.find("bpot") != notfound) rdpot(word, iss);
-		else if (word.find("npot") != notfound) rdpot(word, iss);
-		else if (word == "nisc") {
-			int ncmp = rdai(iss);
-			isospin.ncmp = ncmp; isospin.coef.resize(ncmp); isospin.cmp.resize(ncmp, npar);
-		}
-		else if (word == "nspc") {
-			int ncmp = rdai(iss);
-			spin.ncmp = ncmp; spin.coef.resize(ncmp); spin.cmp.resize(ncmp, npar);
-		}
-		else if (word.find("cisc") != notfound) rdts(word, iss);
-		else if (word.find("cspc") != notfound) rdts(word, iss);
-		else if (word.find("iso(") != notfound) rdts(word, iss);
-		else if (word.find("isp(") != notfound) rdts(word, iss);
+    /*                  remove all '=' signs from buffer         */
+    std::replace(buffer.begin(), buffer.end(), '=', ' ');
+    //myfile << buffer << endl;
+    //myfile << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+    
+    /*                  initialize some variables */
+    dmax = 0;
+    vpot3b = 0. ; apot3b = 0.;
+    /*                  read data from buffer */
+    istringstream iss(buffer);
+    while (iss >> word){
+	cout << word << endl;
+	//myfile << "Input read: " << word << endl;
+	if (word == "npar") {
+	    npar = rdai(iss);
+	    mass.resize(npar);
+	    charges.resize(npar);
 	}
-	inputfile.close();
-	//myfile.close();
-      //  printfile = fopen("out.txt", "w");
-
+	else if (word == "h2m") h2m = rdaf(iss);
+	else if (word == "hh" ) h2m = rdaf(iss);
+	else if (word == "eB" ) eB = rdaf(iss);  
+	else if (word == "momega" ) momega = rdaf(iss); 
+	else if (word == "eBspin") eBspin = rdaf(iss);
+	else if (word == "dmax") dmax = rdai(iss);
+	else if (word == "bmin") rndmin = rdaf(iss);
+	else if (word == "bmax") rndmax = rdaf(iss);
+	else if (word == "irand") irand = rdai(iss);
+	else if (word == "ibf") bosefermi = rdai(iss);
+	else if (word == "ico") keycontinue = rdai(iss);
+	else if (word == "mnb") maxbasis = rdai(iss);
+	else if (word == "mm0") mm0 = rdai(iss);
+	else if (word == "kk0") kk0 = rdai(iss);
+	else if (word == "vpot3b") vpot3b = rdaf(iss);
+	else if (word == "apot3b") apot3b = rdaf(iss);
+	else if (word == "nop") { nop = rdai(iss); potop.resize(nop); nop2b=nop;}
+	else if (word == "npt") npt = rdai(iss);
+	else if (word.find("xm") != notfound) {
+	    for (int i = 0; i < npar; i++) mass[i] = rdaf(iss);
+	}
+	else if (word.find("z") != notfound) {
+	    for (int i = 0; i < npar; i++) charges[i] = rdaf(iss);
+	}
+	else if (word.find("vpot") != notfound) rdpot(word, iss);
+	else if (word.find("apot") != notfound) rdpot(word, iss);
+	else if (word.find("bpot") != notfound) rdpot(word, iss);
+	else if (word.find("npot") != notfound) rdpot(word, iss);
+	else if (word == "nisc") {
+	    int ncmp = rdai(iss);
+	    isospin.ncmp = ncmp; isospin.coef.resize(ncmp); isospin.cmp.resize(ncmp, npar);
+	}
+	else if (word == "nspc") {
+	    int ncmp = rdai(iss);
+	    spin.ncmp = ncmp; spin.coef.resize(ncmp); spin.cmp.resize(ncmp, npar);
+	}
+	else if (word.find("cisc") != notfound) rdts(word, iss);
+	else if (word.find("cspc") != notfound) rdts(word, iss);
+	else if (word.find("iso(") != notfound) rdts(word, iss);
+	else if (word.find("isp(") != notfound) rdts(word, iss);
+	else if (word.find("nts_states") != notfound) nts_states = rdai(iss);
+	else if (word.find("ts_state") != notfound) rdts_state(iss);
+    }
+    inputfile.close();
+    if (nts_states != ts_states.size()) {
+	cout << "\n\tInupt ERROR - number of ts_statees neq size of ts_states" 
+	     << endl << endl; exit(0);
+    }
+    //myfile.close();
+    //  printfile = fopen("out.txt", "w");
 }
 
 ////=============================================================================
@@ -173,6 +179,44 @@ void Input::rdts(string& word, istringstream& iss)
 		icmp = stoi(word.substr(i1 + 1, i3 - i1 - 1));
 		iss >> spin.coef[icmp - 1];
 	}
+}
+//=============================================================================
+void Input::rdts_state(istringstream& iss){
+    int ncmp;
+    size_t notfound = string::npos;
+    string word,npud;
+    MatrixXi sz,tz;
+    VectorXd coef;
+    
+    iss >> word;
+    if (word.find("ncmp") != notfound) {
+	ncmp=rdai(iss);	
+	coef.resize(ncmp); sz.resize(npar,ncmp); tz.resize(npar,ncmp);
+    }
+    else {cout << "Input error expecting ncmp (rdts_state)"; exit(0);}
+    
+    for (int icmp = 0; icmp < ncmp; icmp++) {
+	iss >> word;
+	if (word != "coef") {
+	    cout << "\tInput ERROR expecting 'coef' (rdts_state)\n" ; exit(0);}
+	coef(icmp)=rdaf(iss);
+	iss >> word;
+	if (word != "config") {
+	    cout << "\tInput ERROR expecting 'config' (rdts_state)\n" ; exit(0);}
+	for (int ipar = 0; ipar < npar; ipar++) {
+	    iss >> npud;
+	    cout << npud << " " << npud[1] << endl;
+	    tz(ipar,icmp)=-9999; sz(ipar,icmp)=-9999;
+	    if (npud.substr(0,1) == "p") tz(ipar,icmp)=1;
+	    if (npud.substr(0,1) == "n") tz(ipar,icmp)=2;
+	    if (npud.substr(1,2) == "1") sz(ipar,icmp)=1;
+	    if (npud.substr(1,2) == "2") sz(ipar,icmp)=2;
+	}
+    }
+    cout << ncmp << npar << sz.size() << coef.size() << endl;
+    SpinIsospinState ts_state(ncmp,coef,sz,tz);
+    ts_state.print();
+    ts_states.push_back(ts_state);
 }
 //=============================================================================
 void Input::print(void)

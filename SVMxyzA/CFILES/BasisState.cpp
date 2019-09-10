@@ -10,14 +10,13 @@ BasisState::BasisState(){notdefined = false;}
 //=============================================================================
 BasisState::BasisState( 
 		       MatrixXd Ax_, MatrixXd Ay_, MatrixXd Az_, 
-		       VectorXd ts_vector_): 
-    Ax(Ax_),Ay(Ay_),Az(Az_),ts_vector(ts_vector_)
+		       int ts_): 
+    Ax(Ax_),Ay(Ay_),Az(Az_),ts(ts_)
 {notdefined = false;};
 //=============================================================================
-void BasisState::set(MatrixXd Ax_, MatrixXd Ay_, MatrixXd Az_, 
-		     VectorXd ts_vector_){
+void BasisState::set(MatrixXd Ax_, MatrixXd Ay_, MatrixXd Az_, int ts_){
     Ax = Ax_ ; Ay = Ay_ ; Az = Az_;
-    ts_vector = ts_vector_;
+    ts = ts_;
     notdefined = false;
 };
 //============================================================================= 
@@ -26,7 +25,7 @@ void BasisState::print(){
     cout << "Ax=\n" << Ax.format(OctaveFmt) << "\n" ;
     cout << "Ay=\n" << Ay.format(OctaveFmt) << "\n" ;
     cout << "Az=\n" << Az.format(OctaveFmt) << "\n" ;
-    cout << "isospin,spin=" << ts_vector << "\n";
+    cout << "isospin,spin state=" << ts << "\n";
 };
 //============================================================================= 
 BasisState::~BasisState(){};

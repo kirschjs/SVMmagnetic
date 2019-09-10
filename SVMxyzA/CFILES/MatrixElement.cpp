@@ -17,6 +17,7 @@ MatrixElement::MatrixElement(Input &input)
 {
     cout << "\t Initialize MatrixElement\n";
     npar = input.npar;
+    nts_states - input.nts_states;
     h2m = input.h2m;
     eB=input.eB;
     eBspin=input.eBspin;
@@ -64,13 +65,15 @@ MatrixElement::MatrixElement(Input &input)
 //=============================================================================
 double MatrixElement::overlap(BasisState &state1, BasisState &state2)
     {
-     MatrixXd A1x = state1.Ax;
-     MatrixXd A1y = state1.Ay;
-     MatrixXd A1z = state1.Az;
+     MatrixXd A1x  = state1.Ax;
+     MatrixXd A1y  = state1.Ay;
+     MatrixXd A1z  = state1.Az;
+     int      its1 = state1.ts;
 
      MatrixXd A2_0x = state2.Ax;
      MatrixXd A2_0y = state2.Ay;
      MatrixXd A2_0z = state2.Az;
+     int      its2  = state2.ts;
 
      MatrixXd A2x;
      MatrixXd A2y;
@@ -81,6 +84,7 @@ double MatrixElement::overlap(BasisState &state1, BasisState &state2)
 
      double overlap=0;
 
+     int ijts = its1*nts_states+its2;
      for (int iperm = 0; iperm < nPerm; iperm++)   //sum over permutation
 	 {
 	     A2x = PM[iperm].transpose() * A2_0x * PM[iperm];
@@ -93,42 +97,33 @@ double MatrixElement::overlap(BasisState &state1, BasisState &state2)
       
 	     x=1.0/sqrt(detx*dety*detz);
 //	     overlap = overlap + parity[iperm]* stme[iperm*nPairs*nop] *x;
-	     overlap = overlap + parity[iperm]* stmeop[0].perm[iperm].op2b[0].me(0) *x;
+	     overlap = overlap + parity[iperm]* stmeop[ijts].perm[iperm].op2b[0].me(0) *x;
 	 }
      return overlap;
 }
 
 //==============================================================================================
 double MatrixElement::energy(BasisState &state1, BasisState &state2){    
-    MatrixXd A1x = state1.Ax;
-    MatrixXd A1y = state1.Ay;
-    MatrixXd A1z = state1.Az;
+    MatrixXd A1x  = state1.Ax;
+    MatrixXd A1y  = state1.Ay;
+    MatrixXd A1z  = state1.Az;
+    int      its1 = state1.ts;
 
     //cout<<endl<<A1x<<endl<<endl<<A1x.determinant()<<endl<<endl;
 
     MatrixXd A2_0x = state2.Ax;
     MatrixXd A2_0y = state2.Ay;
     MatrixXd A2_0z = state2.Az;
+    int      its2  = state2.ts;
 
-    MatrixXd A2x;
-    MatrixXd A2y;
-    MatrixXd A2z;
-  
-    MatrixXd InvAAx;
-    MatrixXd InvAAy;
-    MatrixXd InvAAz;
-
-    MatrixXd InvAAmx;
-    MatrixXd InvAAmy;
-    MatrixXd InvAAmz;
+    MatrixXd A2x, A2y, A2z;
+    MatrixXd InvAAx, InvAAy, InvAAz;
+    MatrixXd InvAAmx, InvAAmy, InvAAmz;
+    MatrixXd TTx, TTy, TTz;
 
     MatrixXd qInvAAx = MatrixXd::Zero(npar, npar);
     MatrixXd qInvAAy = MatrixXd::Zero(npar, npar);
     MatrixXd qInvAAz = MatrixXd::Zero(npar, npar);
-
-    MatrixXd TTx;
-    MatrixXd TTy;
-    MatrixXd TTz;
 
     double detx, dety, detz;
     double sx,sy,sz, xme; 
@@ -150,7 +145,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     VectorXd Cjk(npar);
     int i1, j1, k1;
     //====================================
-
+    int ijts = its1*nts_states+its2;
     for (int iperm = 0; iperm < nPerm; iperm++)   //sum over permutation
     {
     	A2x = PM[iperm].transpose() * A2_0x * PM[iperm];
@@ -172,7 +167,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
       	TTy = A1y * InvAAy * A2y;
       	TTz = A1z * InvAAz * A2z;
 //     	KinEnergy = KinEnergy + parity[iperm] * stme[iperm*nPairs*nop] *(TTx.trace()+TTy.trace()+TTz.trace())*x;
-      	KinEnergy = KinEnergy + parity[iperm] * stmeop[0].perm[iperm].op2b[0].me(0)
+      	KinEnergy = KinEnergy + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
 	    *(TTx.trace()+TTy.trace()+TTz.trace())*x;
       	// Magnetic Energy (single-particle version)
       	for(int ipar = 0 ; ipar < npar ; ipar++)
@@ -183,57 +178,6 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	//==================================================================================
 	
 	//=============MagneticEnergy=======================================================  
-		/*
-		for (int i = 0; i < npar; i++)
-		   {
-		       for (int j = 0; j < npar; j++)
-		          {
-		                 mi=magnetic_me[iperm*npar+i];
-		                 mj=magnetic_me[iperm*npar+j];
-		                 if(i==j)   
-		                    {
-		                         qInvAAx(i,i)=InvAAx(i,i)*mi;
-		                         qInvAAy(i,i)=InvAAy(i,i)*mi;
-		                         qInvAAz(i,i)=InvAAz(i,i)*mi;
-		                    }
-		                  else 
-		                    { 
-		                         qInvAAx(i,j)=InvAAx(i,j)*sign(mi)*sqrt(abs(mi))*sign(mj)*sqrt(abs(mj));
-		                         qInvAAy(i,j)=InvAAy(i,j)*sign(mi)*sqrt(abs(mi))*sign(mj)*sqrt(abs(mj));
-		                         qInvAAz(i,j)=InvAAz(i,j)*sign(mi)*sqrt(abs(mi))*sign(mj)*sqrt(abs(mj));
-		
-		                    }
-		
-		          }
-		   }
-		
-		for (int ipair = 0; ipair < nPairs; ipair++)   //sum over pairs
-		   {
-		           sx = TBP[ipair].transpose() * qInvAAx * TBP[ipair];
-		           sy = TBP[ipair].transpose() * qInvAAy * TBP[ipair];
-		           sz = TBP[ipair].transpose() * qInvAAz * TBP[ipair];
-		           MagneticEnergy = MagneticEnergy + parity[iperm]*(sx+sy)*x;
-		           harmonic = harmonic + parity[iperm] * sz * x;
-		    }  
-		
-		*/
-			//if (isospin.cmp[jcmp].tz[PV[iperm](ipar)] == 2)  s = 0.1; 
-		
-		/*
-		for (int ipair = 0; ipair < nPairs; ipair++)   //sum over pairs
-		   {
-		           sx = TBP[ipair].transpose() * InvAAx * TBP[ipair];
-		           sy = TBP[ipair].transpose() * InvAAy * TBP[ipair];
-		           sz = TBP[ipair].transpose() * InvAAz * TBP[ipair];
-		           //MagneticEnergy = MagneticEnergy + parity[iperm]*stme[iperm*nPairs*nop]*(sx+sy)*x;
-		           //harmonic = harmonic + parity[iperm] * stme[iperm*nPairs*nop] *x* sz;
-		
-		           MagneticEnergy = MagneticEnergy + parity[iperm]*magnetic_me_pair[iperm*nPairs]*(sx+sy)*x;
-		           harmonic = harmonic + parity[iperm] * magnetic_me_pair[iperm*nPairs] *x* sz;
-		
-		    }  
-		*/
-
 	int ipair = 0;			
 	for (int i = 0; i < npar; i++) {
 	    for (int j = i+1; j < npar; j++) {
@@ -257,20 +201,6 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    
 	} 
 
-	/*
-		
-		      InvAAmx = (A1x + A2x).inverse();
-		      InvAAmy = (A1y + A2y).inverse();
-		      InvAAmz = (A1z + A2z).inverse();
-		//cout<< InvAAmz<<endl;
-		
-		for (int ipar = 0; ipar < npar; ipar++)   //sum over pairs
-			{
-		             MagneticEnergy = MagneticEnergy + parity[iperm] * magnetic_me[iperm*npar+ipar]*(InvAAmx(ipar,ipar)+InvAAmy(ipar,ipar))*x; 
-		             harmonic = harmonic + parity[iperm] * magnetic_me[iperm*npar+ipar]*InvAAmz(ipar,ipar)*x;
-			}
-		*/
-
 	//====================MagneticSpinEnergy============================================
 		
 	for (int ipar = 0; ipar < npar; ipar++){   //sum over single particles
@@ -284,7 +214,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    sz = TBP[ipair].transpose() * InvAAz * TBP[ipair];
 	    for (int iop = 0; iop < nop; iop++){
 //		xme = parity[iperm] * stme[(iperm*nPairs+ipair)*nop+iop];
-		xme = parity[iperm] * stmeop[0].perm[iperm].op2b[iop].me(ipair);
+		xme = parity[iperm] * stmeop[ijts].perm[iperm].op2b[iop].me(ipair);
 		for (int ipt = 0; ipt < npt; ipt++){
 		    y=1/sqrt( (2.0*apot(iop, ipt)*sx + 1)
 			     *(2.0*apot(iop, ipt)*sy + 1)
@@ -331,7 +261,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 				}
 	    	}
 //	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stme[iperm*nPairs*nop] *PotEnergy3BP;
-	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stmeop[0].perm[iperm].op2b[0].me(0)
+	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
 			    *PotEnergy3BP;
 		}
 	  	//====================================
@@ -427,28 +357,6 @@ void MatrixElement::PrepareSpinIsospinME(Input &input){
 	}
     }
     }
-
-/*
-    stme.resize(nPairs*nPerm*nop);
-    //int keypr = 1;
-
-    int ipair = -1;
-    for (int ip = 0; ip < npar; ip++){
-	for (int jp = ip + 1; jp < npar; jp++){
-	    ipair++;
-	    //    fprintf(input.printfile,
-	    //	    "\t\t PrepareSpinIsospinME: ipair = %4d   ipar = %4d   jpar = %4d \n",ipair,ip,jp);
-	    for (int iperm = 0; iperm < nPerm; iperm++){
-		for (int iop = 0; iop < nop; iop++){       
-		    stme[(iperm*nPairs+ipair)*nop+iop] = operators.O(ip, jp, PV[iperm], iop);    
-		    printf("ip,jp= %4d %4d  iperm= %4d  iop= %4d  op= %12.6e %12.6e\n"
-			   ,ip,jp,iperm,iop,stme[(iperm*nPairs+ipair)*nop+iop]
-			   ,stmeop[0].perm[iperm].op2b[iop].me(ipair));
-		}
-	    }
-	}
-    }
-*/
 }
 //==============================PrepareMagneticME===============================================
 void MatrixElement::PrepareMagneticME(Input &input){

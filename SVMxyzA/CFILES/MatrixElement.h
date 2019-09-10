@@ -36,6 +36,7 @@ private:
     double h2m, L, apot3b, vpot3b, eB, eBspin, momega;
     int npar, npt, nop, dmax, nPairs, nPerm, nConf,ibf;
     int nop2b,nop1b;
+    int nts_states;
     
     std::vector<VectorXd> bbox; //vector of cells
     std::vector<MatrixXd> PM;

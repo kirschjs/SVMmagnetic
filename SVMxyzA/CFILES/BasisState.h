@@ -6,11 +6,11 @@ class BasisState
 {
 public:
     BasisState();
-    BasisState(MatrixXd Ax, MatrixXd Ay, MatrixXd Az, VectorXd ts_vector);
-    void set(  MatrixXd Ax, MatrixXd Ay, MatrixXd Az, VectorXd ts_vector);
+    BasisState(MatrixXd Ax, MatrixXd Ay, MatrixXd Az, int ts);
+    void set(  MatrixXd Ax, MatrixXd Ay, MatrixXd Az, int ts);
     void print();
     MatrixXd Ax, Ay, Az; 
-    VectorXd ts_vector;
+    int ts;
     bool notdefined = false;
     ~BasisState();
 };

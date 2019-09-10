@@ -1,0 +1,17 @@
+#pragma once
+#include <Eigen> 
+using namespace Eigen;
+
+class BasisState
+{
+public:
+  BasisState();
+  BasisState(MatrixXd Ax, MatrixXd Ay, MatrixXd Az, int isospin, int spin);
+  void set(MatrixXd Ax_, MatrixXd Ay_, MatrixXd Az_, int isospin_, int spin_);
+  void print();
+  MatrixXd Ax, Ay, Az; 
+  int isospin, spin;
+  bool notdefined = false;
+  ~BasisState();
+};
+

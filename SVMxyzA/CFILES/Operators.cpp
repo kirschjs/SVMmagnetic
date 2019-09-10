@@ -13,6 +13,7 @@ Operators::Operators(Input &input)
 	spin    = input.spin;
 	isospin = input.isospin;
 	nop2b   = input.nop2b;
+	npairs  = npar*(npar-1)/2;
 }
 //=============================================================================
 /* 
@@ -57,8 +58,8 @@ vector<ME2bST>  Operators::OST_2bme(SpinIsospinState &state1, SpinIsospinState &
     std::vector<ME2bST> op2b(nop2b);
 
     for (int iop2b = 0; iop2b < nop2b; iop2b++){
-	op2b[iop2b].me.resize(npar,npar);
-	op2b[iop2b].me = MatrixXd::Zero(npar,npar);
+	op2b[iop2b].me.resize(npairs);
+	op2b[iop2b].me = VectorXd::Zero(npairs);
     }
     
     bool     keypr= false;
@@ -72,14 +73,16 @@ vector<ME2bST>  Operators::OST_2bme(SpinIsospinState &state1, SpinIsospinState &
 	    if (keypr) printf("OST_2bme 2: %4d C = %9.4f |%3d %3d >\n",jcmp,state2.coef(jcmp),sz2[0],sz2[1]);
 	    double fctr = state1.coef(icmp) * state2.coef(jcmp);
 	    for (int iop2b = 0; iop2b < nop2b; iop2b++){       
+		int ipair = -1;
 		for (int ip = 0; ip < npar; ip++){
 		    for (int jp = ip + 1; jp < npar; jp++){
+			ipair = ipair+1;
 			spin_me    = Spin2bME(   sz1,sz2 ,ip ,jp ,Perm ,iop2b);
 			isospin_me = Isospin2bME(tz1,tz2 ,ip ,jp ,Perm ,iop2b);
-			op2b[iop2b].me(ip,jp) = op2b[iop2b].me(ip,jp) +
+			op2b[iop2b].me(ipair) = op2b[iop2b].me(ipair) +
 			    fctr*spin_me*isospin_me;
 			if (keypr) 
-			    printf("\t  iop= %3d  fctr= %9.4f  me= %9.4f\n",iop2b,fctr,op2b[iop2b].me(ip,jp));
+			    printf("\t  iop= %3d  fctr= %9.4f  me= %9.4f\n",iop2b,fctr,op2b[iop2b].me(ipair));
 		    }
 		}
 	    }
@@ -88,11 +91,13 @@ vector<ME2bST>  Operators::OST_2bme(SpinIsospinState &state1, SpinIsospinState &
 
     if (keypr) {
 	for (int iop2b = 0; iop2b < nop2b; iop2b++){       
+	    int ipair = -1;
 	    for (int ip = 0; ip < npar; ip++){
 		for (int jp = ip + 1; jp < npar; jp++){
+		    ipair = ipair+1;
 		    spin_me    = Spin2bME(   sz1,sz2 ,ip ,jp ,Perm ,iop2b);
 		    isospin_me = Isospin2bME(tz1,tz2 ,ip ,jp ,Perm ,iop2b);
-		    printf("\t  OST_2bme: iop= %3d    me= %9.4f\n",iop2b,op2b[iop2b].me(ip,jp));
+		    printf("\t  OST_2bme: iop= %3d    me= %9.4f\n",iop2b,op2b[iop2b].me(ipair));
 		}
 	    }
 	}

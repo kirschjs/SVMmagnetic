@@ -23,7 +23,7 @@ using namespace Eigen;
     me2b = stme2b[ijst].perm[iperm].op[iop].me(ipar,jpar)
 */
 struct ME1bST   {VectorXd me;};
-struct ME2bST   {MatrixXd me;};
+struct ME2bST   {VectorXd me;};
 struct MEofSTOp {std::vector<ME1bST>   op1b; std::vector<ME2bST>   op2b;};
 struct MESTperm {std::vector<MEofSTOp> perm;};
 //=============================================================================
@@ -44,7 +44,7 @@ private:
     std::vector<int> parity;
     std::vector<VectorXd> TBP;
     
-    std::vector<double> stme;
+//    std::vector<double> stme;
     std::vector<double> magnetic_me;
     std::vector<double> magnetic_spin_me;
     std::vector<double> magnetic_charge_me;

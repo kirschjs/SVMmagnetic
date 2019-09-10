@@ -10,7 +10,7 @@ using namespace Eigen;
 class Operators
 {
 private:
-    int npar,nop2b;
+    int npar,npairs,nop2b;
     SpinState spin;
     IsospinState isospin;
 

@@ -19,6 +19,7 @@ SVM::SVM(Rand &r, Input &input) :rr(r), me(input)
 	kk0 = input.kk0;
 	int ndb = input.maxbasis;
         iBoxInf=input.keycontinue;
+	nts_states = input.nts_states;
 	Hmatrix = MatrixXd::Zero(ndb,ndb);
 	Nmatrix = MatrixXd::Zero(ndb,ndb);
 }
@@ -212,15 +213,21 @@ MatrixXd SVM::A(MatrixXd d)
 
 
 //=============================================================================
+int SVM::ChooseSTstate(){
+//    int its = int(nts_states*x);
+    int its = 0;
+    return its;
+}
+//=============================================================================
 BasisState SVM::FirstNewState(){
-    int ts=0; 
+    int ts=ChooseSTstate(); 
     BasisState NewState(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
 
     double e_overlap=0;
     int count=0;
     while (count<10){
 	count++;
-	int ts=0;
+	int ts=ChooseSTstate();
 	NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
 	e_overlap = me.overlap(NewState, NewState);
 	if(e_overlap>1e-8) break;
@@ -235,7 +242,7 @@ BasisState SVM::FirstNewState(){
     count = 0;
     while (count < 1000){
 	count++;
-	int ts=0;
+	int ts=ChooseSTstate();
 	NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
 	e_overlap = me.overlap(NewState, NewState);
 	if (e_overlap < 1e-8) continue;
@@ -254,7 +261,7 @@ BasisState SVM::NewState(vector<BasisState> &Basis, MatrixXd C, VectorXd D, doub
 	MatrixXd dx = Dmatrix();  //x axis
 	MatrixXd dy = Dmatrix();  //y axis
 	MatrixXd dz = Dmatrix();  //z axis
-	int ts=0;
+	int ts=ChooseSTstate();
 	NewState.set(A(dx),A(dy),A(dz),ts);
 
 	Basis.push_back(NewState);
@@ -374,7 +381,7 @@ BasisState SVM::NewState(vector<BasisState> &Basis, MatrixXd C, VectorXd D, doub
          dx = Dmatrix();
          dy = Dmatrix();
          dz = Dmatrix();
-	 int ts=0;
+	 int ts=ChooseSTstate();
          NewState.set(A(dx),A(dy),A(dz),ts);
 	 Basis[Bsize]=NewState;
 	 UpdateNorm(Basis);

@@ -3,8 +3,8 @@ CFILES = CFILES
 S = $(wildcard $(CFILES)/*.cpp)
 SO = $(subst $(CFILES),OFILES,$(subst cpp,o,$(S)))
 
-COMPILER =  icpc #icc
-FLAGSopt =  -fast
+COMPILER =  c++
+FLAGSopt =  -Ofast
 #FLAGSdbg =  -Wall -fbounds-check
 FLAGS = $(FLAGSopt)
 #FLAGS = $(FLAGSdbg)

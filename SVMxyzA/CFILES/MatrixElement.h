@@ -59,7 +59,6 @@ private:
     void PrepareSpinIsospinME(Input &input);
     
     void PrepareMagneticSpinME(Input &input);
-    void PrepareMagneticME(Input &input);
     double One_magnetic_me(int ipar, VectorXi Perm, int i_spin_coupling);
     double SpinOp(std::vector<int> sz1, std::vector<int> sz2, int npar, int ipar, 
 		  VectorXi Perm, int i_spin_coupling);

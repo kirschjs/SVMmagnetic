@@ -176,7 +176,7 @@ e^{-\frac{\Lambda^2}{4}
 e^{-\frac{1}{2}\ve{x}^TA_x\ve{x}}~
 e^{-\frac{1}{2}\ve{y}^TA_y\ve{y}}~
 e^{-\frac{1}{2}\ve{z}^TA_z\ve{z}}\cdot
-\sum\limits_\alpha^{|\lambda|}\lambda_\alpha\underbrace{\sum\limits_{n=1}^{N_\text{int}}C^n_\alpha\ket{s^n_1,\ldots,s^n_N~;~t^n_1,\ldots,t^n_N}}_{\text{input
+\sum\limits_\alpha^{|\lambda|}\lambda_\alpha\underbrace{\sum\limits_{n=1}^{N_\text{comp}}C^n_\alpha\ket{s^n_1,\ldots,s^n_N~;~t^n_1,\ldots,t^n_N}}_{\text{input
 together with}~|\lambda|}
 \ee
 
@@ -219,15 +219,15 @@ with $\hat{P}\in\mathcal{A}$, hence,
 \mathbb{1}:=\mathbb{1}_{\ve{r}}^P\cdot\mathbb{1}_{\ve{s}}^P           &
 \left(\frac{(2\pi)^{3N}}
 {\det\mathbb{A}_x\det\mathbb{A}_y\det\mathbb{A}_z}\right)^\frac{1}{2} &
-\sum\limits_{\alpha,n}^{|\lambda|,N_\text{int}}\lambda_\alpha C^n_\alpha
-\overlap{\ve{s}^n;\ve{t}^n}{\hat{P}(\ve{s}^n);\hat{P}(\ve{t}^n)} \\
+\sum\limits_{\alpha,\alpha',n,n'}^{|\lambda|,N_\text{comp}}\lambda_\alpha\lambda'_{\alpha'} C^n_\alpha C^{n'}_{\alpha'}
+\overlap{\ve{s}^{n'};\ve{t}^{n'}}{\hat{P}(\ve{s}^n);\hat{P}(\ve{t}^n)} \\
 % E_kin
 \frac{1}{2}\ve{p}^\intercal\mathbb{1}_{3N}\ve{p}
 =-\frac{\hbar^2}{2}\ve{\nabla}^\intercal\mathbb{1}_{3N}\ve{\nabla}&
 \frac{\hbar^2}{2}~\mathbb{1}_{\ve{r}}^P~\prodcart(A_c)_{im}(\mathbb{A}^{-1}_c)_{mn}(A^P_c)_{ni} & \mathbb{1}_{\ve{s}}^P\\
 % Lz from background field
 \sumin q_iL_i^z=q_i~\left(x_i\partial_{y_i}-y_i\partial_{x_i}\right) &  0 &
-\mathbb{Q}^P_{\ve{s}}:=\sumin\sum\limits_{\alpha,n}^{|\lambda|,N_\text{int}}
+\mathbb{Q}^P_{\ve{s}}:=\sumin\sum\limits_{\alpha,n}^{|\lambda|,N_\text{comp}}
 \underbrace{(\hat{P}[\ve{t}^n])_i}_{=q_{P(i)}} \lambda_\alpha C^n_\alpha
 \overlap{\ve{s}^n;\ve{t}^n}{\hat{P}(\ve{s}^n);\hat{P}(\ve{t}^n)}
 \\
@@ -237,7 +237,7 @@ with $\hat{P}\in\mathcal{A}$, hence,
 % magnetic moment 
 \sumin q_i\sigma_i^z                                                 &
 \mathbb{1}_{\ve{r}}^P &
-\sumin\sum\limits_{\alpha,n}^{|\lambda|,N_\text{int}}
+\sumin\sum\limits_{\alpha,n}^{|\lambda|,N_\text{comp}}
 \underbrace{\left(\hat{P}[\ve{t}^n]\right)_i}_{=q_{P(i)}}~
 \underbrace{\left(\hat{P}[\ve{s}^n]\right)_i}_{=s^z_{P(i)}}
 \lambda_\alpha C^n_\alpha

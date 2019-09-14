@@ -17,7 +17,7 @@ MatrixElement::MatrixElement(Input &input)
 {
     cout << "\t Initialize MatrixElement\n";
     npar = input.npar;
-    nts_states - input.nts_states;
+    nts_states = input.nts_states;
     h2m = input.h2m;
     eB=input.eB;
     eBspin=input.eBspin;
@@ -31,8 +31,6 @@ MatrixElement::MatrixElement(Input &input)
 //=======================
     isospin   = input.isospin;
     spin      = input.spin;
-    NchargPar = CountNchargPar();
-    cout<<"     Number of charged Particles= "<<NchargPar<<endl;
 //=======================
     dmax   = input.dmax;
     nop    = input.nop;
@@ -438,16 +436,6 @@ int MatrixElement::sign(double x)
 	if (x >= 0) N = 1;
 	if (x < 0) N = -1;
 	return N;
-}
-//=============================================================================
-int MatrixElement::CountNchargPar()
-{
-    int NchargPar=0;
-	for (int ipar = 0; ipar < npar; ipar++)
-    {
-        if(isospin.cmp[0].tz[ipar]==1)  NchargPar++;
-    }
-    return NchargPar;
 }
 //=============================================================================
 void MatrixElement::PrepareMagneticMePair(Input &input){

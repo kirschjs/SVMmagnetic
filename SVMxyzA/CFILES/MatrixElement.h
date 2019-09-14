@@ -76,9 +76,6 @@ private:
     void PrepareMagneticMePair(Input &input);
     double One_magnetic_me_pair(int i, int j, VectorXi Perm, int index);
 
-    int NchargPar;
-    int CountNchargPar();
-
     IsospinState isospin;
     SpinState spin;
 //==============

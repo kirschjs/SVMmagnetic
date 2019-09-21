@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 {
     clock_t begin = clock();
     string jobname;
-    if (argc < 2) { jobname = "2H_EFT"; }
+    if (argc < 2) { jobname = "tmp_ppp"; }
     else { jobname = argv[1]; } 
 
 /* Read and print input data */

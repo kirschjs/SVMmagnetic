@@ -55,8 +55,8 @@ MatrixElement::MatrixElement(Input &input)
 
     PrepareSpinIsospinME(input);
     PreparePotential(input);
-    PrepareMagneticSpinME(input);
-    PrepareMagneticMePair(input);
+    //PrepareMagneticSpinME(input);
+    //PrepareMagneticMePair(input);
                      
 }
 //=============================================================================
@@ -167,7 +167,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
       	KinEnergy = KinEnergy + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
 	    *(TTx.trace()+TTy.trace()+TTz.trace())*x;
 	//==================================================================================
-      	// Magnetic Energy (single-particle version)
+/*      	// Magnetic Energy (single-particle version)
       	for (int ipar = 0 ; ipar < npar ; ipar++){
 	    MagneticEnergyT = MagneticEnergyT + parity[iperm] * 
 		magnetic_charge_me[iperm*npar+ipar] * (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)) * x;
@@ -221,7 +221,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    }
 	}
 		//===============================================================
-
+*/
 	if (npar>2){
 	    PotEnergy3BP = 0;
 	    for (int i = 0; i < npar; i++){
@@ -268,12 +268,12 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     PotEnergy3B     = vpot3b             * PotEnergy3B;
 
     KinEnergy       = KinEnergy_cof      * KinEnergy;
-    MagneticEnergy  = MagneticEnergy_cof * MagneticEnergy;
-    MagneticEnergyT = MagneticEnergy_cof * MagneticEnergyT;
-    harmonic        = harmonic_cof       * harmonic;
-    MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
+    //MagneticEnergy  = MagneticEnergy_cof * MagneticEnergy;
+    //MagneticEnergyT = MagneticEnergy_cof * MagneticEnergyT;
+    //harmonic        = harmonic_cof       * harmonic;
+    //MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
 
-    return PotEnergy + KinEnergy + MagneticEnergyT + harmonic + MagneticSpin + PotEnergy3B;
+    return PotEnergy + KinEnergy + PotEnergy3B; //+ MagneticEnergyT + harmonic + MagneticSpin
 }
 //=============================================================================
 

@@ -62,7 +62,7 @@ public:
     double h2m, rndmin, rndmax;
     std::vector<double> mass;
     std::vector<double> charges;
-    int nop, nop1b=1, nop2b, npt;
+    int nop, nop1b, nop2b, npt;
     std::vector<potentialop> potop;
     double vpot3b, apot3b;
     SpinState spin;

@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     if (argc < 2) { jobname = "tmp_ppp"; }
     else { jobname = argv[1]; } 
 
-/* Read and print input data */
+    /* Read and print input data */
     std::size_t found;
     found=jobname.find(".inp");
     if (found != std::string::npos) {jobname = jobname.substr(0,found);}
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     cout << " jobname = " << jobname << "\n";
     Input input("./input/"+jobname+".inp");
     input.print();
-//===========
+    //===========
     ifstream  srcc("./input/"+jobname+".inp");
     cout<< srcc.rdbuf();
 
@@ -50,29 +50,23 @@ int main(int argc, char* argv[])
     dst << src.rdbuf();
     dst.close();
 
-//===========
-//===========
-        //ofstream  sta("stats.txt");
-       // sta.close();
-//===========
-
-
-/* Initialize the random numbr generator */
+    /* Initialize the random numbr generator */
     Rand rand(input.irand);
-/* Initialize SVM  */
+    /* Initialize SVM  */
     printf("\n\t Initialize SVM \n");
     SVM svm(rand, input);
     BasisState NewState;
     vector<BasisState> Basis;
 	
     NewState = svm.FirstNewState();
-//    NewState.print();
+    //    NewState.print();
 
     if (NewState.notdefined) {  
-	cout << NewState.notdefined << "\n";
-	cout << "finding new state with appropriate overloop failed" << endl << endl;
-	return 0; }
-/* start SVM iterations */
+      cout << NewState.notdefined << "\n";
+      cout << "finding new state with appropriate overloop failed" << endl << endl;
+      return 0; 
+    }
+    /* start SVM iterations */
     Basis.push_back(NewState);
     svm.UpdateNorm(Basis);
     svm.UpdateHamiltonian(Basis);
@@ -148,7 +142,3 @@ cout << "time=  " << elapsed_secs << endl;
 
 	return 0;
 }
-
-
-
-

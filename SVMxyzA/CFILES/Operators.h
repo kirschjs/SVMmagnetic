@@ -20,6 +20,7 @@ public:
     double Isospin2bME(VectorXi &sz1, VectorXi &sz2, int i, int j, VectorXi &Perm, int iop);
     double O2b_0(int i1, int i2, int i3, int i4);
     double O2b_1(int i1, int i2, int i3, int i4);
+    std::vector<ME1bST> OST_1bme(SpinIsospinState &state1, SpinIsospinState &state2, VectorXi &Perm);
     std::vector<ME2bST> OST_2bme(SpinIsospinState &state1, SpinIsospinState &state2, VectorXi &Perm);
     ~Operators();
 };

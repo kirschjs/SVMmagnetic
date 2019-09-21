@@ -45,6 +45,9 @@ Input::Input(string const &jobname_) : jobname(jobname_)
     /*                  initialize some variables */
     dmax = 0;
     vpot3b = 0. ; apot3b = 0.;
+    nop1b = 1;
+    nop2b = 4;
+
     /*                  read data from buffer */
     istringstream iss(buffer);
     while (iss >> word){
@@ -71,7 +74,7 @@ Input::Input(string const &jobname_) : jobname(jobname_)
 	else if (word == "kk0") kk0 = rdai(iss);
 	else if (word == "vpot3b") vpot3b = rdaf(iss);
 	else if (word == "apot3b") apot3b = rdaf(iss);
-	else if (word == "nop") { nop = rdai(iss); potop.resize(nop); nop2b=nop;}
+	else if (word == "nop") { nop = rdai(iss); potop.resize(nop);}
 	else if (word == "npt") npt = rdai(iss);
 	else if (word.find("xm") != notfound) {
 	    for (int i = 0; i < npar; i++) mass[i] = rdaf(iss);

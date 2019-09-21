@@ -55,9 +55,7 @@ MatrixElement::MatrixElement(Input &input)
 
     PrepareSpinIsospinME(input);
     PreparePotential(input);
-    //PrepareMagneticSpinME(input);
-    //PrepareMagneticMePair(input);
-                     
+                    
 }
 //=============================================================================
 double MatrixElement::overlap(BasisState &state1, BasisState &state2){
@@ -203,6 +201,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	for (int ipar = 0; ipar < npar; ipar++){   //sum over single particles
 	    MagneticSpin = MagneticSpin + parity[iperm] * magnetic_spin_me[iperm*npar+ipar]*x;    
 	}
+*/
 		
 		//=========================2-body===================================================
         for (int ipair = 0; ipair < nPairs; ipair++){   //sum over pairs
@@ -221,7 +220,6 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    }
 	}
 		//===============================================================
-*/
 	if (npar>2){
 	    PotEnergy3BP = 0;
 	    for (int i = 0; i < npar; i++){
@@ -290,21 +288,6 @@ vector<VectorXd> TwoBodyPairs(int npar){
     }
     return Cij;
 }
-//============================================================================= 
-/*
-vector<VectorXd> MatrixElement::ChargeVec()
-{
-	vector<VectorXd> charge_vec(nPerm);
-	for (int iperm = 0; iperm < nPerm; iperm++)
-          {
-              for (int ipar = 0; ipar < npar; ipar++)
-                {
-                      charge_vec[iperm](ipar) = One_magneticme(ipar, PV[iperm]); 
-                }                          
-	  }
-	return charge_vec;
-}
-*/
 //=============================================================================
 void MatrixElement::PreparePotential(Input &input)
 {
@@ -326,67 +309,35 @@ void MatrixElement::PreparePotential(Input &input)
 void MatrixElement::PrepareSpinIsospinME(Input &input){
     Operators operators(input);
 
-//  Define the ST matrix element structure
-    nop1b=1;
-    nop2b=nop;
+	//  Define the ST matrix element structure
     int nst = input.ts_states.size();
     stmeop.resize(nst*nst);
     for (int ij = 0; ij < nst*nst; ij++){
-	stmeop[ij].perm.resize(nPerm);
-	for (int iperm = 0; iperm < nPerm; iperm++){
-	    stmeop[ij].perm[iperm].op1b.resize(nop1b);
-	    stmeop[ij].perm[iperm].op2b.resize(nop2b);
-	    for (int iop1b = 0; iop1b < nop1b; iop1b++){
-		stmeop[ij].perm[iperm].op1b[iop1b].me.resize(npar);
-	    }
-	    for (int iop2b = 0; iop2b < nop2b; iop2b++){
-		stmeop[ij].perm[iperm].op2b[iop2b].me.resize(nPairs);
-	    }
-	}
+		stmeop[ij].perm.resize(nPerm);
+			for (int iperm = 0; iperm < nPerm; iperm++){
+	    		stmeop[ij].perm[iperm].op1b.resize(input.nop1b);
+	    		stmeop[ij].perm[iperm].op2b.resize(input.nop2b);
+	    			for (int iop1b = 0; iop1b < input.nop1b; iop1b++){
+						stmeop[ij].perm[iperm].op1b[iop1b].me.resize(npar);
+	    			}
+	    			for (int iop2b = 0; iop2b < input.nop2b; iop2b++){
+						stmeop[ij].perm[iperm].op2b[iop2b].me.resize(nPairs);
+	    			}
+			}
     }
-// Calculate the 2-body matrix elements
+	
+	// Calculate the 2-body matrix elements
     for (int istl = 0; istl < nst; istl++){
-    for (int istr = 0; istr < nst; istr++){
-	SpinIsospinState st_l = input.ts_states[istl];
-	SpinIsospinState st_r = input.ts_states[istr];
-	int ij = istl*nst+istr;
-	for (int iperm = 0; iperm < nPerm; iperm++){
-	    stmeop[ij].perm[iperm].op2b = operators.OST_2bme(st_l,st_r,PV[iperm]);
-	}
+    	for (int istr = 0; istr < nst; istr++){
+			SpinIsospinState st_l = input.ts_states[istl];
+			SpinIsospinState st_r = input.ts_states[istr];
+			int ij = istl*nst+istr;
+			for (int iperm = 0; iperm < nPerm; iperm++){
+				stmeop[ij].perm[iperm].op1b = operators.OST_1bme(st_l,st_r,PV[iperm]);
+	    		stmeop[ij].perm[iperm].op2b = operators.OST_2bme(st_l,st_r,PV[iperm]);
+			}
+    	}
     }
-    }
-}
-//=============================================================================
-//   PrepareMagneticSpinME
-void MatrixElement::PrepareMagneticSpinME(Input &input){
-    magnetic_spin_me.resize(npar*nPerm);
-    magnetic_charge_me.resize(npar*nPerm);
-    for (int ipar = 0; ipar < npar; ipar++){
-	for (int iperm = 0; iperm < nPerm; iperm++){
-            magnetic_charge_me[iperm*npar+ipar] = One_magnetic_me(ipar, PV[iperm], 1);
-            magnetic_spin_me[iperm*npar+ipar] = One_magnetic_me(ipar, PV[iperm], 2);
-	}
-    }
-}
-//=======================================
-double MatrixElement::One_magnetic_me(int ipar, VectorXi Perm, int i_spin_coupling){
-    double x = 0;
-    for (int icmp = 0; icmp < spin.ncmp; icmp++){
-	for (int jcmp = 0; jcmp < spin.ncmp; jcmp++){
-	    x = x + spin.coef[icmp] * spin.coef[jcmp] 
-		* SpinOp(spin.cmp[icmp].sz,spin.cmp[jcmp].sz, npar, ipar, Perm, i_spin_coupling);
-	}
-    }
-
-    double y = 0;
-    for (int icmp = 0; icmp < isospin.ncmp; icmp++){
-	for (int jcmp = 0; jcmp < isospin.ncmp; jcmp++){
-	    y = y + isospin.coef[icmp] * isospin.coef[jcmp]
-		* IsospinOp(isospin.cmp[icmp].tz, isospin.cmp[jcmp].tz, 
-			    npar, ipar, Perm, i_spin_coupling);
-	}
-    }
-    return x*y;
 }
 //=============================================================================
 double MatrixElement::SpinOp(std::vector<int> sz1, std::vector<int> sz2, int npar, int ipar, 
@@ -436,41 +387,6 @@ int MatrixElement::sign(double x)
 	if (x >= 0) N = 1;
 	if (x < 0) N = -1;
 	return N;
-}
-//=============================================================================
-void MatrixElement::PrepareMagneticMePair(Input &input){
-    magnetic_me_pair.resize(nPairs*nPerm);
-    int ipair = -1;
-    for (int ip = 0; ip < npar; ip++){
-	for (int jp = ip + 1; jp < npar; jp++){
-	    ipair++;
-	    for (int iperm = 0; iperm < nPerm; iperm++){   
-		magnetic_me_pair[iperm*nPairs+ipair]=VectorXd::Zero(3); 
-		magnetic_me_pair[iperm*nPairs+ipair](0) = One_magnetic_me_pair(ip, jp, PV[iperm], 0);  
-		magnetic_me_pair[iperm*nPairs+ipair](1) = One_magnetic_me_pair(ip, jp, PV[iperm], 1); 
-		magnetic_me_pair[iperm*nPairs+ipair](2) = One_magnetic_me_pair(ip, jp, PV[iperm], 2);              	      	}
-	}
-    }
-}
-//=============================================================================
-double MatrixElement::One_magnetic_me_pair(int i, int j, VectorXi Perm, int index)
-{
-   	double x = 0;
-	for (int icmp = 0; icmp < spin.ncmp; icmp++){
-		for (int jcmp = 0; jcmp < spin.ncmp; jcmp++){
-	    	x = x + spin.coef[icmp] * spin.coef[jcmp] 
-	        	* SpinOp_pair(spin.cmp[icmp].sz,spin.cmp[jcmp].sz, npar, i, j, Perm);
-	  	}
-	}
-
-	double  y = 0;
-	for (int icmp = 0; icmp < isospin.ncmp; icmp++){
-		for (int jcmp = 0; jcmp < isospin.ncmp; jcmp++){
-	    	y = y + isospin.coef[icmp] * isospin.coef[jcmp]
-                  * IsospinOp_pair(isospin.cmp[icmp].tz, isospin.cmp[jcmp].tz, npar, i, j, Perm, index);
-	  	}
-	}
-	return x*y;
 }
 //=============================================================================
 double MatrixElement::SpinOp_pair(std::vector<int> sz1, std::vector<int> sz2, int npar, int i, int j, 
@@ -529,30 +445,6 @@ double MatrixElement::IsospinOp_pair(std::vector<int> tz1, std::vector<int> tz2,
 	return x;
 }
 
-
-/*
-
-                   if ((tz2[Perm(i)] == 1) &&(tz2[Perm(j)] == 1))  x = 1;
-                   if ((tz2[Perm(i)] == 1) &&(tz2[Perm(j)] == 2))  x = 1;
-                   if ((tz2[Perm(i)] == 2) &&(tz2[Perm(j)] == 1))  x = q;
-                   if ((tz2[Perm(i)] == 2) &&(tz2[Perm(j)] == 2))  x = q;
-                }
-              if(index= 1)
-                {
-                   if ((tz2[Perm(i)] == 1) &&(tz2[Perm(j)] == 1))  x = 1;
-                   if ((tz2[Perm(i)] == 1) &&(tz2[Perm(j)] == 2))  x = q;
-                   if ((tz2[Perm(i)] == 2) &&(tz2[Perm(j)] == 1))  x = 1;
-                   if ((tz2[Perm(i)] == 2) &&(tz2[Perm(j)] == 2))  x = q;
-                }
-              if(index= 2)
-                {
-                   if ((tz2[Perm(i)] == 1) &&(tz2[Perm(j)] == 1))  x = 1;
-                   if ((tz2[Perm(i)] == 1) &&(tz2[Perm(j)] == 2))  x = q;
-                   if ((tz2[Perm(i)] == 2) &&(tz2[Perm(j)] == 1))  x = q;
-                   if ((tz2[Perm(i)] == 2) &&(tz2[Perm(j)] == 2))  x = q*q;
-                }
-
-*/
 //=============================================================================
 MatrixElement::~MatrixElement(){}
 //=============================================================================

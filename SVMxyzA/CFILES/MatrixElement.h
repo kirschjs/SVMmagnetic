@@ -58,23 +58,17 @@ private:
     void PreparePotential(Input &input);
     void PrepareSpinIsospinME(Input &input);
     
-    void PrepareMagneticSpinME(Input &input);
-    double One_magnetic_me(int ipar, VectorXi Perm, int i_spin_coupling);
     double SpinOp(std::vector<int> sz1, std::vector<int> sz2, int npar, int ipar, 
 		  VectorXi Perm, int i_spin_coupling);
     double IsospinOp(std::vector<int> tz1, std::vector<int> tz2, int npar, int ipar, 
-		     VectorXi Perm, int i_spin_coupling);
+          VectorXi Perm, int i_spin_coupling);
     double SpinOp_pair(std::vector<int> sz1, std::vector<int> sz2, int npar, int i, int j, 
-		       VectorXi Perm);
+	      VectorXi Perm);
     double IsospinOp_pair(std::vector<int> tz1, std::vector<int> tz2, int npar, int i, int j, 
-			  VectorXi Perm, int index);
+		  VectorXi Perm, int index);
 
     int factorial(int npar);
     int sign(double x);
-
-    std::vector<VectorXd> magnetic_me_pair;
-    void PrepareMagneticMePair(Input &input);
-    double One_magnetic_me_pair(int i, int j, VectorXi Perm, int index);
 
     IsospinState isospin;
     SpinState spin;

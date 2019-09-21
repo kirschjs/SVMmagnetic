@@ -7,3 +7,4 @@ SCRATCH
 tmp*
 *.aux
 *.x
+*.log

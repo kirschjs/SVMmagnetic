@@ -10,12 +10,15 @@ using namespace Eigen;
 class Operators
 {
 private:
-    int npar,npairs,nop2b;
+    int npar,npairs,nop1b,nop2b;
     SpinState spin;
     IsospinState isospin;
 
 public:
     Operators(Input &input);
+    double Spin1bME(   VectorXi &sz1, VectorXi &sz2, int i, VectorXi &Perm, int iop);
+    double Isospin1bME(VectorXi &sz1, VectorXi &sz2, int i, VectorXi &Perm, int iop);
+    double O1b_0(int i1, int i2);
     double Spin2bME(   VectorXi &sz1, VectorXi &sz2, int i, int j, VectorXi &Perm, int iop);
     double Isospin2bME(VectorXi &sz1, VectorXi &sz2, int i, int j, VectorXi &Perm, int iop);
     double O2b_0(int i1, int i2, int i3, int i4);

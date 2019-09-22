@@ -11,6 +11,7 @@ nofootinbib]{revtex4-1}
 \usepackage{slashed}
 \usepackage{bbold}
 \usepackage{lipsum,pdflscape}
+\usepackage{tikz-feynman}
 
 %\usepackage{hyperref}
 \unitlength=1mm
@@ -28,6 +29,14 @@ nofootinbib]{revtex4-1}
 \DeclareFontShape{T1}{calligra}{m}{n}{<->s*[2.2]callig15}{}
 \newcommand{\scriptr}{\mathcalligra{r}\,}
 \newcommand{\boldscriptr}{\pmb{\mathcalligra{r}}\,}
+\definecolor{blue}{HTML}{4169E1}
+\definecolor{red}{HTML}{DC143C}
+\definecolor{green}{HTML}{2E8B57}
+\definecolor{black}{HTML}{000000}
+\newcommand{\black}[1]{\textcolor{black}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
 
 \begin{document}
 
@@ -88,16 +97,7 @@ nofootinbib]{revtex4-1}
 \newcommand{\be}{\begin{equation}}
 \newcommand{\ee}{\end{equation}}
 \newcommand{\la}{\label}
-\newcommand{\ber}{\begin{eqnarray}}
-\newcommand{\eer}{\end{eqnarray}}
-\newcommand{\nn}{\nonumber}
-\newcommand{\half}{\frac{1}{2}}
-\newcommand{\thalf}{\nicefrac[]{3}{2}}
 \newcommand{\bs}[1]{\ensuremath{\boldsymbol{#1}}}
-\newcommand{\bea}{\begin{eqnarray}}
-\newcommand{\eea}{\end{eqnarray}}
-\newcommand{\beq}{\begin{align}}
-\newcommand{\eeq}{\end{align}}
 \newcommand{\bk}{\bs k}
 \newcommand{\bt}{B_{^{3}\text{H}}}
 \newcommand{\bh}{B_{^{3}\text{He}}}
@@ -109,21 +109,15 @@ nofootinbib]{revtex4-1}
 \newcommand{\overlap}[2] {\left\langle~#1~\left|~#2~\right.\right\rangle}
 \newcommand{\me}[3] {\left\langle~#1~\left|~#2~\left|~#3~\right.\right.\right\rangle}
 \newcommand{\lam}[1]{$\Lambda=#1~$fm$^{-1}$}
-\newcommand{\parg}[1] {\paragraph*{-\,\textit{#1}\,-}}
 \newcommand{\nopi}{\pi\hspace{-6pt}/}
 \newcommand{\ve}[1]{\ensuremath{\boldsymbol{#1}}}
-\newcommand{\xvec}{\bs{x}}
-\newcommand{\rvec}{\bs{r}}
-\newcommand{\sgve}{\ensuremath{\boldsymbol{\sigma}}}
-\newcommand{\tave}{\ensuremath{\boldsymbol{\tau}}}
-\newcommand{\na}{\nabla}
 \newcommand{\sumin}{\sum\limits_{i=1}^\texttt{N}}
 \newcommand{\sumijn}{\sum\limits_{i<j}^\texttt{N}}
 \newcommand{\sumijk}{\sum\limits_\text{cyc.}\sum\limits_{i<j<k}}
 \newcommand{\prodcart}{\prod\limits_{c=x,y,z}}
 \newcommand{\tx}{\tilde{x}}
 \newcommand{\eftnopi}{\mbox{EFT($\slashed{\pi}$)}}
-
+\newcommand{\pe}[1]{\ensuremath{\mathfrak{P}_{#1}}}
 \newcommand{\cmment}[2]{\paragraph*{Ecce: #1}\texttt{\textcolor{blue}{#2}}}
 
 
@@ -155,7 +149,7 @@ problem in an external, \ie, static magnetic field.
 \ee
 
 \paragraph{The Hamiltonian}
-\begin{align}\la{eq.hamiltonian}
+\begin{align}\la{eq.ham}
 \hat{H}=-\frac{\hbar^2}{2m}&\sumin\Bigg\lbrace
 \ve{\nabla}(i)^2
 +i\left(\frac{\hbar^2}{2m}\right)\left(\frac{q(i)B_0}{\hbar}\right)
@@ -259,5 +253,27 @@ with
 \Big[\ket{\texttt{pn}}-\ket{\texttt{np}}\Big]\\
 \ve{s}^n(i)=\left\lbrace{1~\Rightarrow~\sigma^z(i)=\uparrow\atop 2~\Rightarrow~\sigma^z(i)=\downarrow}\right.\;\;\;\text{and}\;\;\;\ve{t}^n(i)=\left\lbrace{1~\Rightarrow~\tau^z(i)=\texttt{p}\atop 2~\Rightarrow~\tau^z(i)=\texttt{n}}\right.
 \end{align}
+
+\begin{table}
+\begin{equation*}\la{tab.isoOP}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{2.4}
+\begin{array}{l|c|c}
+\hline
+\texttt{\#} & \texttt{O\red{1}b\_\#} & \texttt{O\red{2}b\_\#} \\
+\hline
+0 &
+\overlap{\ve{\xi}^{n'}_1,\ldots,\ve{\xi}^{n'}_N}
+{\ve{\xi}^n_{\pe{1}},\ldots,\ve{\xi}^n_{\pe{N}}} &
+ \overlap{\ve{\xi}^{n'}_1,\ldots,\ve{\xi}^{n'}_N}
+{\ve{\xi}^n_{\pe{1}},\ldots,\ve{\xi}^n_{\pe{N}}} \\
+1 & -- &
+\overlap{\ve{\xi}^{n'}_1,\ldots,\ve{\xi}^{n'}_i,\ldots,\ve{\xi}^{n'}_j,\ldots,\ve{\xi}^{n'}_N}
+{\ve{\xi}^n_{\pe{1}},\ldots,\ve{\xi}^{n}_{\pe{j}},\ldots,\ve{\xi}^{n}_{\pe{i}},\ldots,\ve{\xi}^n_{\pe{N}}} \\
+\end{array}
+\end{equation*}
+\caption{Two basic operations are performed by the interaction Hamiltinian
+Eq.\eqref{eq.ham}, namely, the identity, and the exchange.}
+\end{table}
 \end{landscape}
 \end{document}

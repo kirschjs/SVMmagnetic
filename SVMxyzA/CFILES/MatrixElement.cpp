@@ -195,13 +195,13 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    }
 	    
 	} 
+*/
 	
 	//====================MagneticSpinEnergy============================================
 		
-	for (int ipar = 0; ipar < npar; ipar++){   //sum over single particles
-	    MagneticSpin = MagneticSpin + parity[iperm] * magnetic_spin_me[iperm*npar+ipar]*x;    
-	}
-*/
+		for (int ipar = 0; ipar < npar; ipar++){   //sum over single particles
+		    MagneticSpin = MagneticSpin + parity[iperm] * stmeop[ijts].perm[iperm].op1b[3].me(ipar)*x;    
+		}
 		
 		//=========================2-body===================================================
         for (int ipair = 0; ipair < nPairs; ipair++){   //sum over pairs
@@ -269,9 +269,9 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     //MagneticEnergy  = MagneticEnergy_cof * MagneticEnergy;
     //MagneticEnergyT = MagneticEnergy_cof * MagneticEnergyT;
     //harmonic        = harmonic_cof       * harmonic;
-    //MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
+    MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
 
-    return PotEnergy + KinEnergy + PotEnergy3B; //+ MagneticEnergyT + harmonic + MagneticSpin
+    return PotEnergy + KinEnergy + PotEnergy3B + MagneticSpin; //+ MagneticEnergyT + harmonic 
 }
 //=============================================================================
 
@@ -370,8 +370,6 @@ double MatrixElement::IsospinOp(std::vector<int> tz1, std::vector<int> tz2, int 
 		if (tz2[Perm(ipar)] == 2)  return -3.826;
 	}
 }
-//==============================EndPrepareMagneticME==============================================
-
 //=============================================================================
 int MatrixElement::factorial(int npar)
 {

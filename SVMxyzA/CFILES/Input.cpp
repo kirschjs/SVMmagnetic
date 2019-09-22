@@ -45,7 +45,7 @@ Input::Input(string const &jobname_) : jobname(jobname_)
     /*                  initialize some variables */
     dmax = 0;
     vpot3b = 0. ; apot3b = 0.;
-    nop1b = 1;
+    nop1b = 4;
     nop2b = 4;
 
     /*                  read data from buffer */

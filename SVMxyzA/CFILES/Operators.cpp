@@ -12,6 +12,7 @@ Operators::Operators(Input &input)
 	npar    = input.npar;
 	spin    = input.spin;
 	isospin = input.isospin;
+	nop1b   = input.nop1b;
 	nop2b   = input.nop2b;
 	npairs  = npar*(npar-1)/2;
 }
@@ -124,7 +125,7 @@ double Operators::O2b_1(int i1, int i2, int i3, int i4) //permutation operator
 	//	1 for spin up
 	//	2 for spin down
 	double x = 0;
-	if ((i1 == i4) && (i2 == i3)) x = 1;
+	if ((i1 == i4) && (i2 == i3)) x = 1.0;
 	return x;
 }
 //=============================================================================
@@ -133,31 +134,39 @@ double Operators::O2b_1(int i1, int i2, int i3, int i4) //permutation operator
          < S T | Oij(kind) Perm | S T >
     | S T > - vector state defined in the constructor
     O(iop) - operator
-    i,j     - interacting particles
+    i      - particle which interacts with the background field
 */
 
 vector<ME1bST>  Operators::OST_1bme(SpinIsospinState &state1, SpinIsospinState &state2, VectorXi &Perm){
     std::vector<ME1bST> op1b(nop1b);
 
     for (int iop1b = 0; iop1b < nop1b; iop1b++){
-		op2b[iop1b].me.resize(npar);
-		op2b[iop1b].me = VectorXd::Zero(npar);
+		op1b[iop1b].me.resize(npar);
+		op1b[iop1b].me = VectorXd::Zero(npar);
     }
     
     bool     keypr= false;
     double   spin_me,isospin_me;
-    VectorXi sz(npar),tz(npar);
+    VectorXi szleft(npar),tzleft(npar),szright(npar),tzright(npar);
     for (int icmp = 0; icmp < state1.ncmp; icmp++){
 		for (int jcmp = 0; jcmp < state2.ncmp; jcmp++){
 	    	szleft=state1.sz.col(icmp);szright=state1.sz.col(jcmp);
 	    	tzleft=state1.tz.col(icmp);tzright=state1.tz.col(jcmp);
 	    	double fctr = state1.coef(icmp) * state2.coef(jcmp);
-	    	for (int iop1b = 0; iop1b < nop2b; iop1b++){       
+	    	for (int iop1b = 0; iop1b < nop1b; iop1b++){       
 				int ipar = -1;
 				for (int ip = 0; ip < npar; ip++){
 					ipar = ipar+1;
-					spin_me    = Spin1bME(szleft,szright,ip ,Perm ,iop1b);
-					isospin_me = Isospin1bME(tzleft,tzright,ip ,Perm ,iop1b);
+					/*
+						iop1b = 0 = NORM       = spinOP-0 * isospinOP-0
+								1 = s_z(i)     = spinOP-1 * isospinOP-0
+								2 = q(i)       = spinOP-0 * isospinOP-1
+								3 = q(i)s_z(i) = spinOP-1 * isospinOP-1
+					*/
+					int iop1bS = iop1b%2;
+					int iop1bI = (iop1b>1)?1:0;
+					spin_me    = Spin1bME(szleft,szright,ip ,Perm ,iop1bS);
+					isospin_me = Isospin1bME(tzleft,tzright,ip ,Perm ,iop1bI);
 					op1b[iop1b].me(ipar) = op1b[iop1b].me(ipar) +
 					    fctr*spin_me*isospin_me;
 				}
@@ -176,46 +185,39 @@ double Operators::Spin1bME(VectorXi &szL, VectorXi &szR, int i, VectorXi &Perm, 
 	    if (szL(ipar) != szR(Perm(ipar))) return 0;
 	}
     }
-    /*      id        spin and isospin ex     spin ex     isospin ex
-       iop: 0-Wigner, 1-Majorana            , 2-Bartlett, 3-Heisenberg */
-         if (iop == 0) return O1b_0(sz1(i), sz1(j), sz2(Perm(i)), sz2(Perm(j)) );
-    else if (iop == 1) return O1b_1(sz1(i), sz1(j), sz2(Perm(i)), sz2(Perm(j)) );
-    else if (iop == 2) return O1b_1(sz1(i), sz1(j), sz2(Perm(i)), sz2(Perm(j)) );
-    else if (iop == 3) return O1b_0(sz1(i), sz1(j), sz2(Perm(i)), sz2(Perm(j)) );
-    else {cout << "\n\tERROR undefined iop (Spin2bME)"<<endl;exit(0);}
+    /*      id      */
+         if (iop == 0) return O1b_0(szL(i), szR(Perm(i)) );
+    else if (iop == 1) {
+    	// s_z(i) is returned: 1->+1 2->-1
+    	double dsz = (3.0-2.0*szR(Perm(i)));
+    	return dsz*O1b_0(szL(i), szR(Perm(i)) );         
+    }
+    else {cout << "\n\tERROR undefined iop (Spin1bME)"<<endl;exit(0);}
 }
 //=============================================================================
-double Operators::Isospin2bME(VectorXi &tz1, VectorXi &tz2, int i, int j, VectorXi &Perm, int iop){
+double Operators::Isospin1bME(VectorXi &tzL, VectorXi &tzR, int i, VectorXi &Perm, int iop){
 
     for (int ipar = 0; ipar < npar; ipar++){
-	if ((ipar != i) && (ipar != j)){
-	    if (tz1(ipar) != tz2(Perm(ipar))) return 0;
+	if (ipar != i){
+	    if (tzL(ipar) != tzR(Perm(ipar))) return 0;
 	}
     }
-    /*      id        spin and isospin ex     spin ex     isospin ex
-       iop: 0-Wigner, 1-Majorana            , 2-Bartlett, 3-Heisenberg */
-         if (iop == 0) return O2b_0(tz1(i), tz1(j), tz2(Perm(i)), tz2(Perm(j)) );
-    else if (iop == 1) return O2b_1(tz1(i), tz1(j), tz2(Perm(i)), tz2(Perm(j)) );
-    else if (iop == 2) return O2b_0(tz1(i), tz1(j), tz2(Perm(i)), tz2(Perm(j)) );
-    else if (iop == 3) return O2b_1(tz1(i), tz1(j), tz2(Perm(i)), tz2(Perm(j)) );
-    else {cout << "\n\tERROR undefined iop (Isospin2bME)"<<endl;exit(0);}
+    /*      id      */
+         if (iop == 0) return O1b_0(tzL(i), tzR(Perm(i)) );
+    else if (iop == 1) {
+    	// q(i) is returned: 1->+1 2->0
+    	double dtz = (2.0-tzR(Perm(i)));
+    	return dtz*O1b_0(tzL(i), tzR(Perm(i)) );         
+    }         
+    else {cout << "\n\tERROR undefined iop (Isospin1bME)"<<endl;exit(0);}
 }
 //=============================================================================
-double Operators::O2b_0(int i1, int i2, int i3, int i4) //identity operator
+double Operators::O1b_0(int i1, int i2) //identity operator
 {
 	//	1 for spin up
 	//	2 for spin down
 	double x = 0;
-	if ((i1 == i3) && (i2 == i4)) x = 1.0;
-	return x;
-}
-//=============================================================================
-double Operators::O2b_1(int i1, int i2, int i3, int i4) //permutation operator
-{
-	//	1 for spin up
-	//	2 for spin down
-	double x = 0;
-	if ((i1 == i4) && (i2 == i3)) x = 1;
+	if (i1 == i2) x = 1.0;
 	return x;
 }
 //=============================================================================

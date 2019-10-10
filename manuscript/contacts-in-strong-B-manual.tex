@@ -246,12 +246,20 @@ e^{-\frac{\Lambda^2}{4}\left[\ve{r}(i)-\ve{r}(k)\right]^2}                &  \\
 \ee
 with
 \begin{align}
-\mathbb{A}_x=&A'_x+A^P_x\\
-\frac{\Lambda^2}{4}=\texttt{apot}
+&\mathbb{A}_x=A'_x+A^P_x&\\
+&\frac{\Lambda^2}{4}=\texttt{apot}&
 \intertext{Spin-isospin wave function for the deuteron:}
-\ket{\alpha\hat{=}{}^3S_1}=\Big[\ket{\texttt{12}}+\ket{\texttt{21}}\Big]\otimes
-\Big[\ket{\texttt{pn}}-\ket{\texttt{np}}\Big]\\
-\ve{s}^n(i)=\left\lbrace{1~\Rightarrow~\sigma^z(i)=\uparrow\atop 2~\Rightarrow~\sigma^z(i)=\downarrow}\right.\;\;\;\text{and}\;\;\;\ve{t}^n(i)=\left\lbrace{1~\Rightarrow~\tau^z(i)=\texttt{p}\atop 2~\Rightarrow~\tau^z(i)=\texttt{n}}\right.
+&\ket{\alpha\hat{=}{}^3S_1;m_S=\left\lbrace{0\atop\pm 1}\right\rbrace}=\Big[\left\lbrace{\ket{\texttt{12}}+\ket{\texttt{21}}\atop\ket{\texttt{11/22}}+\ket{\texttt{11/22}}}\right\rbrace\Big]\otimes
+\Big[\ket{\texttt{pn}}-\ket{\texttt{np}}\Big]&\\
+&\ve{s}^n(i)=\left\lbrace{1~\Rightarrow~\sigma^z(i)=\uparrow\atop 2~\Rightarrow~\sigma^z(i)=\downarrow}\right.\;\;\;\text{and}\;\;\;\ve{t}^n(i)=\left\lbrace{1~\Rightarrow~\tau^z(i)=\texttt{p}\atop 2~\Rightarrow~\tau^z(i)=\texttt{n}}\right.&
+\intertext{$\texttt{Operators.cpp}$}
+\texttt{iop}=0: &\;\;\;\;\; \mathbb{1} & \text{(Wigner)}\\
+\texttt{iop}=1: &\;\;\;\;\; -\frac{1}{4}\left[\mathbb{1}+\ve{\tau}(i)\cdot\ve{\tau}(j)\right]
+\left[\mathbb{1}+\ve{\sigma}(i)\cdot\ve{\sigma}(j)\right] & \text{(Majorana)}\\
+\texttt{iop}=2: &\;\;\;\;\; \frac{1}{2}\left[\mathbb{1}+\ve{\sigma}(i)\cdot\ve{\sigma}(j)\right] &
+ \text{(Bartlett)}\\
+\texttt{iop}=3: &\;\;\;\;\; -\frac{1}{2}\left[\mathbb{1}+\ve{\tau}(i)\cdot\ve{\tau}(j)\right] &
+ \text{(Heisenberg)}
 \end{align}
 
 \begin{table}
@@ -276,4 +284,5 @@ with
 Eq.\eqref{eq.ham}, namely, the identity, and the exchange.}
 \end{table}
 \end{landscape}
+
 \end{document}

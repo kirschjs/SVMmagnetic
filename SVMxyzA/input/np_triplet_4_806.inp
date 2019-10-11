@@ -11,11 +11,19 @@ cisc(2)=-1.000000  iso(1,2)=2 iso(2,2)=1
 !
 nts_states=1
   ts_state ncmp=4
-! np S=0 m=0
+! np S=1 m=0
        coef= 1.0  config= p1 n2 
-       coef=-1.0  config= p2 n1 
-       coef= 1.0  config= n1 p2 
+       coef= 1.0  config= p2 n1 
+       coef=-1.0  config= n1 p2 
        coef=-1.0  config= n2 p1 
+! np S=1 m=-1
+!  ts_state ncmp=2
+!       coef= 1.0  config= p2 n2 
+!       coef=-1.0  config= n2 p2 
+! np S=1 m=+1
+!  ts_state ncmp=2
+!       coef= 1.0  config= p1 n1 
+!       coef=-1.0  config= n1 p1 
 !
 h2m=23.8300
 !
@@ -24,8 +32,8 @@ irand=-1776  ibf=1
 !eB=0.83937660  eBspin=0.0
 eB=0.0  eBspin=0.0
 !
-mm0=22  kk0=25  mnb=70
-bmin=0.30000  bmax=28.00000
+mm0=12  kk0=25  mnb=70
+bmin=0.30000  bmax=8.00000
 !
 npt=1  nop=3
 vpot(1,1)=-396.56800000  apot(1,1)=4.0000   bpot(1,1)=0  npot(1,1)=0

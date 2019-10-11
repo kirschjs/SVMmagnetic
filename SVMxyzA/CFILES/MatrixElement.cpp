@@ -16,18 +16,17 @@ vector<VectorXd> TwoBodyPairs(int npar);
 MatrixElement::MatrixElement(Input &input)
 {
     cout << "\t Initialize MatrixElement\n";
-    npar = input.npar;
+    npar       = input.npar;
     nts_states = input.nts_states;
-    h2m = input.h2m;
-    eB=input.eB;
-    eBspin=input.eBspin;
-    //momega=input.momega;
-    momega=0.0;
+    h2m        = input.h2m;
+    eB         = input.eB;
+    eBspin     = input.eBspin;
+    momega     = input.momega;
 //=======================
     KinEnergy_cof      = 0.5 * h2m;
-    MagneticEnergy_cof = 0.25 * pow(npar, -1)* 0.5 * h2m * eB * eB; 
-    harmonic_cof       = 0.25 * pow(npar, -1)* 0.5 * h2m * momega * momega;
-    MagneticSpin_cof   = -0.5* h2m * eBspin;
+    MagneticEnergy_cof =  eB; 
+    harmonic_cof       =  0.0;
+    MagneticSpin_cof   =  0.0;
 //=======================
     isospin   = input.isospin;
     spin      = input.spin;
@@ -128,8 +127,6 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     double MagneticEnergyT=0,MagneticSpin=0, harmonic=0, PotEnergy3B = 0;
     double PotEnergy3BP = 0;
 
-    //===========3-body===================
-
     MatrixXd Bx(2,2);
     MatrixXd By(2,2);
     MatrixXd Bz(2,2);
@@ -137,10 +134,11 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     CoordinatsTransformation v(npar);
     VectorXd Cik(npar);
     VectorXd Cjk(npar);
+
     int i1, j1, k1;
-    //====================================
+
     int ijts = its1*nts_states+its2;
-    //====================================
+
     for (int iperm = 0; iperm < nPerm; iperm++)   //sum over permutation
     {
     	A2x = PM[iperm].transpose() * A2_0x * PM[iperm];
@@ -164,15 +162,21 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 //     	KinEnergy = KinEnergy + parity[iperm] * stme[iperm*nPairs*nop] *(TTx.trace()+TTy.trace()+TTz.trace())*x;
       	KinEnergy = KinEnergy + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
 	    *(TTx.trace()+TTy.trace()+TTz.trace())*x;
-	//==================================================================================
-/*      	// Magnetic Energy (single-particle version)
-      	for (int ipar = 0 ; ipar < npar ; ipar++){
-	    MagneticEnergyT = MagneticEnergyT + parity[iperm] * 
-		magnetic_charge_me[iperm*npar+ipar] * (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)) * x;
-      	}
-	//==================================================================================
 	
-	//=============MagneticEnergy=======================================================  
+		// 3d isotropic single-particle harmonic oscilator
+	    MagneticEnergyT =  MagneticEnergyT + parity[iperm]
+		    				 * stmeop[ijts].perm[iperm].op1b[0].me(0)
+			 				 * (InvAAx.trace()+InvAAy.trace()+InvAAz.trace())
+			 				 * x;
+
+/*        // Magnetic Energy (single-particle version)
+      	for (int ipar = 0 ; ipar < npar ; ipar++){
+		    MagneticEnergyT = MagneticEnergyT + parity[iperm] * 
+			magnetic_charge_me[iperm*npar+ipar] * (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)) * x;
+      	}//--i
+*/
+/*	
+	// =============MagneticEnergy=======================================================  
 	int ipair = 0;			
 	for (int i = 0; i < npar; i++) {
 	    for (int j = i+1; j < npar; j++) {
@@ -197,83 +201,84 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	} 
 */
 	
-	//====================MagneticSpinEnergy============================================
-		
+	
+		// sigma * B	
 		for (int ipar = 0; ipar < npar; ipar++){   //sum over single particles
 		    MagneticSpin = MagneticSpin + parity[iperm] * stmeop[ijts].perm[iperm].op1b[3].me(ipar)*x;    
-		}
+		}//--i
 		
-		//=========================2-body===================================================
-        for (int ipair = 0; ipair < nPairs; ipair++){   //sum over pairs
-	    sx = TBP[ipair].transpose() * InvAAx * TBP[ipair];
-	    sy = TBP[ipair].transpose() * InvAAy * TBP[ipair];
-	    sz = TBP[ipair].transpose() * InvAAz * TBP[ipair];
-	    for (int iop = 0; iop < nop; iop++){
-//		xme = parity[iperm] * stme[(iperm*nPairs+ipair)*nop+iop];
-		xme = parity[iperm] * stmeop[ijts].perm[iperm].op2b[iop].me(ipair);
-		for (int ipt = 0; ipt < npt; ipt++){
-		    y=1/sqrt( (2.0*apot(iop, ipt)*sx + 1)
-			     *(2.0*apot(iop, ipt)*sy + 1)
-			     *(2.0*apot(iop, ipt)*sz + 1));
-		    PotEnergy = PotEnergy + xme * vpot(iop, ipt)*x*y;
-		}
-	    }
-	}
-		//===============================================================
-	if (npar>2){
-	    PotEnergy3BP = 0;
-	    for (int i = 0; i < npar; i++){
-		for (int j = i + 1; j < npar; j++){
-		    for (int k = j + 1; k < npar; k++){
-			for (int cyc = 0; cyc < 3; cyc++)
-			    {
-				if (cyc == 0) {i1 = i; j1 = j; k1 = k;}
-				if (cyc == 1) {i1 = j; j1 = k; k1 = i;}
-				if (cyc == 2) {i1 = k; j1 = i; k1 = j;}
-				Cik = v.SingleParticle(i1, k1);
-				Cjk = v.SingleParticle(j1, k1);
+		// 2-body contact
+        for (int ipair = 0; ipair < nPairs; ipair++){
+	    	sx = TBP[ipair].transpose() * InvAAx * TBP[ipair];
+	    	sy = TBP[ipair].transpose() * InvAAy * TBP[ipair];
+	    	sz = TBP[ipair].transpose() * InvAAz * TBP[ipair];
+	    	for (int iop = 0; iop < nop; iop++){
+				// xme = parity[iperm] * stme[(iperm*nPairs+ipair)*nop+iop];
+				xme = parity[iperm] * stmeop[ijts].perm[iperm].op2b[iop].me(ipair);
+				for (int ipt = 0; ipt < npt; ipt++){
+				    y=1/sqrt( (2.0*apot(iop, ipt)*sx + 1)
+					     *(2.0*apot(iop, ipt)*sy + 1)
+					     *(2.0*apot(iop, ipt)*sz + 1));
+				    PotEnergy = PotEnergy + xme * vpot(iop, ipt)*x*y;
+				}
+	    	}
+		}//--ipair
 
-				Bx(0,0) = Cik.transpose()*InvAAx*Cik;
-				Bx(0,1) = Cik.transpose()*InvAAx*Cjk;
-				Bx(1,0) = Cjk.transpose()*InvAAx*Cik;
-				Bx(1,1) = Cjk.transpose()*InvAAx*Cjk;
+		// 3-body contact
+		if (npar>2){
+	    	PotEnergy3BP = 0;
+	    	for (int i = 0; i < npar; i++){
+				for (int j = i + 1; j < npar; j++){
+		    		for (int k = j + 1; k < npar; k++){
+						for (int cyc = 0; cyc < 3; cyc++)
+			    		{
+							if (cyc == 0) {i1 = i; j1 = j; k1 = k;}
+							if (cyc == 1) {i1 = j; j1 = k; k1 = i;}
+							if (cyc == 2) {i1 = k; j1 = i; k1 = j;}
+							Cik = v.SingleParticle(i1, k1);
+							Cjk = v.SingleParticle(j1, k1);
 
-				By(0,0) = Cik.transpose()*InvAAy*Cik;
-				By(0,1) = Cik.transpose()*InvAAy*Cjk;
-				By(1,0) = Cjk.transpose()*InvAAy*Cik;
-				By(1,1) = Cjk.transpose()*InvAAy*Cjk;
+							Bx(0,0) = Cik.transpose()*InvAAx*Cik;
+							Bx(0,1) = Cik.transpose()*InvAAx*Cjk;
+							Bx(1,0) = Cjk.transpose()*InvAAx*Cik;
+							Bx(1,1) = Cjk.transpose()*InvAAx*Cjk;
 
-				Bz(0,0) = Cik.transpose()*InvAAz*Cik;
-				Bz(0,1) = Cik.transpose()*InvAAz*Cjk;
-				Bz(1,0) = Cjk.transpose()*InvAAz*Cik;
-				Bz(1,1) = Cjk.transpose()*InvAAz*Cjk;
+							By(0,0) = Cik.transpose()*InvAAy*Cik;
+							By(0,1) = Cik.transpose()*InvAAy*Cjk;
+							By(1,0) = Cjk.transpose()*InvAAy*Cik;
+							By(1,1) = Cjk.transpose()*InvAAy*Cjk;
+
+							Bz(0,0) = Cik.transpose()*InvAAz*Cik;
+							Bz(0,1) = Cik.transpose()*InvAAz*Cjk;
+							Bz(1,0) = Cjk.transpose()*InvAAz*Cik;
+							Bz(1,1) = Cjk.transpose()*InvAAz*Cjk;
 
                         	z=1/sqrt(  (2.0*apot3b*Bx + I).determinant()
-					 * (2.0*apot3b*By + I).determinant()
-					  *(2.0*apot3b*Bz + I).determinant());                          
-				PotEnergy3BP = PotEnergy3BP + z*x;
-			    }
-		    }
+					 				 * (2.0*apot3b*By + I).determinant()
+					  				 * (2.0*apot3b*Bz + I).determinant());                          
+							PotEnergy3BP = PotEnergy3BP + z*x;
+			    		}//--cyc
+		    		}//--k
+				}//--j
+	    	} //--i
+        	// PotEnergy3B = PotEnergy3B + parity[iperm] * stme[iperm*nPairs*nop] *PotEnergy3BP;
+	    	PotEnergy3B = PotEnergy3B + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
+					     *PotEnergy3BP;
 		}
-	    }
-//	  		PotEnergy3B = PotEnergy3B + parity[iperm] * stme[iperm*nPairs*nop] *PotEnergy3BP;
-	    PotEnergy3B = PotEnergy3B + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
-		*PotEnergy3BP;
-	}
-	  	//====================================
-    }    
+
+    }//--perm    
 
     PotEnergy3B     = vpot3b             * PotEnergy3B;
 
     KinEnergy       = KinEnergy_cof      * KinEnergy;
     //MagneticEnergy  = MagneticEnergy_cof * MagneticEnergy;
-    //MagneticEnergyT = MagneticEnergy_cof * MagneticEnergyT;
+    MagneticEnergyT = MagneticEnergy_cof * MagneticEnergyT;
     //harmonic        = harmonic_cof       * harmonic;
-    MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
+    //MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
 
-    return PotEnergy + KinEnergy + PotEnergy3B + MagneticSpin; //+ MagneticEnergyT + harmonic 
+    return  KinEnergy + PotEnergy + PotEnergy3B + MagneticEnergyT;
 }
-//=============================================================================
+
 
 //=============================================================================
 vector<VectorXd> TwoBodyPairs(int npar){

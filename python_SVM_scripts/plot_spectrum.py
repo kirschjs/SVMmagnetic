@@ -5,8 +5,9 @@ import numpy as np
 plt.style.use('bmh')
 
 offs = 3
-infile = '/home/johannesk/kette_repo/source/SVMmagnetic/SVMxyzA/output/tmp_pp.txt'
-
+sysem = 'np_singlet_4_806'
+sysem = 'np_3dosci_806'
+infile = '/home/kirscher/kette_repo/SVMmagnetic/SVMxyzA/output/%s.txt' % sysem
 data = [line for line in open(infile)]
 evs = []
 e0 = []
@@ -58,8 +59,8 @@ ax1.set_ylabel(r'$E_n/E_0$', fontsize=15)
 
 #ax1.axhline(y=r, xmin=0, xmax=1)
 #plt.ylim(-0.5 * r, 2 * r)
-plt.legend(loc='best', fontsize=22)
+#plt.legend(loc='best', fontsize=22)
 ax1.set_xlabel(r'$i$', fontsize=15)
 plt.show()
 
-fig.savefig("dineutron_spectrum.pdf", bbox_inches='tight')
+fig.savefig("%s.pdf" % sysem, bbox_inches='tight')

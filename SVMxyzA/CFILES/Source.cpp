@@ -74,6 +74,7 @@ int main(int argc, char* argv[])
     MatrixXd H;
     MatrixXd C;
     VectorXd D;
+    VectorXd Dt;
     double E;
     double EE;
     int n_accuracy=1;
@@ -90,10 +91,11 @@ int main(int argc, char* argv[])
 	    ges.compute(H, Norm);
 	    C = ges.eigenvectors();
 	    D = ges.eigenvalues();
+      std::sort(D(0),D(2));      
 	    E = D.minCoeff();
             if (itr == 1)  EE = E + abs(E / 2);
             dE.push_back(abs((EE - E) / E));
-	    printf("\t iter = %4d     E = %14.8f    dE = %14.8f \n",itr,E,dE[itr-1]);
+	    printf("\t iter = %4d     E = %14.8f    dE = %14.8f Dt = %14.8f\n",itr,E,dE[itr-1],E);
 //==================
             dst.open("./output/"+jobname+".txt", ios::app);
             dst<<"      itr= "<<itr<<"        E= "<<fixed<<E<<endl;

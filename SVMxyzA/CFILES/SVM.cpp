@@ -12,16 +12,16 @@ using namespace Eigen;
 //=============================================================================
 SVM::SVM(Rand &r, Input &input) :rr(r), me(input)
 {
-	N = input.npar;
+	N    = input.npar;
 	bmin = input.rndmin;
 	bmax = input.rndmax;
-	mm0 = input.mm0;
-	kk0 = input.kk0;
-	int ndb = input.maxbasis;
-        iBoxInf=input.keycontinue;
+	mm0  = input.mm0;
+	kk0  = input.kk0;
+	int ndb  = input.maxbasis;
+     iBoxInf =input.keycontinue;
 	nts_states = input.nts_states;
-	Hmatrix = MatrixXd::Zero(ndb,ndb);
-	Nmatrix = MatrixXd::Zero(ndb,ndb);
+	Hmatrix    = MatrixXd::Zero(ndb,ndb);
+	Nmatrix    = MatrixXd::Zero(ndb,ndb);
 }
 //=============================================================================
 int SVM::CheckOverlap(vector<BasisState> &Basis)
@@ -63,7 +63,7 @@ double EigenValuesEquation(int itr, VectorXd D, VectorXd q, double aa, double xx
 
 	return zz;
 }
-//=============================================================================
+// see Varga and Suzuki in PRC 52 (6) 1995
 double SVM::NewEnergy(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double E, double EE)
 {
 	int itr = Basis.size() - 1;
@@ -74,7 +74,7 @@ double SVM::NewEnergy(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double 
 	double NN = 0;
 
 
-	//create the vector of i+1 state ortogonal to all provius ortogonal eigenvectors.
+	//create the vector of i+1 state orthogonal to all provius orthogonal eigenvectors.
 
 	for (int k1 = 0; k1 < itr; k1++)
 	{
@@ -134,6 +134,8 @@ double SVM::NewEnergy(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double 
 	double e3 = E;
 	double Ee1 = EigenValuesEquation(itr, D, q, aa, e1);
 	//std::cout << "intial e1= " << e1 << ".   intial e2= " << e2<<endl;
+	
+	// find the interval in which the secular equation flips its sign
 	while (count < 101)
 	{
 		
@@ -146,9 +148,9 @@ double SVM::NewEnergy(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double 
 		}
                 
 	}
-	//std::cout  << "counter= " << count << std::endl;
-	//if (count > 100)  std::cout << "finding root lees then the last fail " << std::endl;
-        if (count <= 100)
+
+	// subdivide the interval in which the new eigenvalue lies	
+    if (count <= 100)
 	{
 		count = 0;
 		//	std::cout << "e3= ";
@@ -156,10 +158,15 @@ double SVM::NewEnergy(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double 
 		{
 			e3 = (e1 + e2) / 2;
 			//	std::cout << e3 << "  ";
-			if (EigenValuesEquation(itr, D, q, aa, e3)*EigenValuesEquation(itr, D, q, aa, e2) < 0)  e1 = e3;
+			if (EigenValuesEquation(itr, D, q, aa, e3)*EigenValuesEquation(itr, D, q, aa, e2) < 0)  {
+				e1 = e3;
+			}
 			else e2 = e3;
 			count++;
-			if (count > 100)  break;
+			if (count > 100) {
+				cout << "count"    << "\n";
+				break;
+			}
 		}
 		//	std::cout << std::endl;
              
@@ -214,49 +221,63 @@ MatrixXd SVM::A(MatrixXd d)
 
 //=============================================================================
 int SVM::ChooseSTstate(){
-//    int its = int(nts_states*x);
-    int its = 0;
+    int its = rand() % nts_states;// int(nts_states*x);
+//	cout << "its = " << its << endl;
+//    int its = 0;
     return its;
 }
 //=============================================================================
 BasisState SVM::FirstNewState(){
+    
+	// choose a random spatial and internal state
     int ts=ChooseSTstate(); 
     BasisState NewState(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
 
     double e_overlap=0;
     int count=0;
+
+    // find a state with a norm > 10^-8
     while (count<10){
-	count++;
-	int ts=ChooseSTstate();
-	NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
-	e_overlap = me.overlap(NewState, NewState);
-	if(e_overlap>1e-8) break;
+		count++;
+		int ts=ChooseSTstate();
+		NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
+		e_overlap = me.overlap(NewState, NewState);
+		if(e_overlap>1e-8) break;
     }
 
-    if(count >= 8){NewState.notdefined = true; return NewState;}
+    if(count >= 8){
+		NewState.notdefined = true;
+		return NewState;
+	}
 
+	// <newstate|H|newstate>/<newstate|newstate>
     double MinE = me.energy(NewState, NewState) / e_overlap;
     double NewE;
+    
+    // sample more states (matrices) and eventually select ONE with
+    // the lowest, normalized Hamiltonian expectation
     BasisState State;
+    
     State = NewState;
     count = 0;
     while (count < 1000){
-	count++;
-	int ts=ChooseSTstate();
-	NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
-	e_overlap = me.overlap(NewState, NewState);
-	if (e_overlap < 1e-8) continue;
-	NewE = me.energy(NewState, NewState) / e_overlap;
-	if (NewE < MinE){ MinE = NewE; State = NewState;}
+		count++;
+		int ts=ChooseSTstate();
+		NewState.set(A(Dmatrix()),A(Dmatrix()),A(Dmatrix()),ts);
+		e_overlap = me.overlap(NewState, NewState);
+		if (e_overlap < 1e-8) continue;
+		NewE = me.energy(NewState, NewState) / e_overlap;
+		if (NewE < MinE){ MinE = NewE; State = NewState;}
     }
     return State;
 }
 
-//=============================================================================
+
 BasisState SVM::NewState(vector<BasisState> &Basis, MatrixXd C, VectorXd D, double E, double EE)
 {
 
-        BasisState NewState;
+	// construe a new basis state
+    BasisState NewState;
 
 	MatrixXd dx = Dmatrix();  //x axis
 	MatrixXd dy = Dmatrix();  //y axis
@@ -264,26 +285,26 @@ BasisState SVM::NewState(vector<BasisState> &Basis, MatrixXd C, VectorXd D, doub
 	int ts=ChooseSTstate();
 	NewState.set(A(dx),A(dy),A(dz),ts);
 
+	// add the new state to an existing basis
 	Basis.push_back(NewState);
 	UpdateNorm(Basis);
 	UpdateHamiltonian(Basis);
         
-        int Bsize=Basis.size()-1;
+    int Bsize=Basis.size()-1;
 
 	BasisState State; 
 
-        MatrixXd mindx=dx;
-        MatrixXd mindy=dy;
-        MatrixXd mindz=dz;
+    MatrixXd mindx=dx;
+    MatrixXd mindy=dy;
+    MatrixXd mindz=dz;
  
-
-        int ix,jx,kkx;
-        int iy,jy,kky;
-        int iz,jz,kkz;
-        int count1,count2,count3, count4;
-        int xx=0;
-        count4=0; 
-        double minE, NewE;
+    int ix,jx,kkx;
+    int iy,jy,kky;
+    int iz,jz,kkz;
+    int count1,count2,count3, count4;
+    int xx=0;
+    count4=0; 
+    double minE, NewE;
 
 	while(count4<=mm0){
 	    ix=0; jx=1; kkx=0;
@@ -293,103 +314,107 @@ BasisState SVM::NewState(vector<BasisState> &Basis, MatrixXd C, VectorXd D, doub
 	    minE=E; NewE=E;       
 
 	    while (count1 < 3*mm0*kk0*N*(N - 1)/2){
-		if (CheckOverlap(Basis) == 1){
-		    NewE = NewEnergy(Basis, C, D, E, EE);
-		    if (NewE < minE) {
-		      minE = NewE;
-		      xx=1;
-		      State=NewState;
 
-		      mindx=dx;
-		      mindy=dy;
-		      mindz=dz;
-		    }
-		    count2 = 0;
-		}
-                count1++;
-		//============================
-		if(count1%kk0==0){ 
-		  dx=mindx;
-		  dy=mindy;
-		  dz=mindz;
-		}
-		//============================
-		count2++;
-		if (count2 > 200){
-		  State.Ax=NewState.Ax;
-		  State.notdefined = true;
-		  break;
-		}
-		//============ Ax ===================
-		count3++;
-                if(count3<=kk0*N*(N - 1)/2){                   
-		    dx(ix,jx)= bmin + (bmax - bmin)*rr.doub();
-		    dx(jx, ix) = dx(ix, jx);
-		    kkx++;
-		    if (kkx == kk0){
-		      kkx = 0;
-		      jx++;
-		      if (jx == N){
-			ix++;
-			if (ix == N - 1) ix = 0;
-			jx = ix + 1;
-		      }
-		    }
-		    NewState.Ax = A(dx);
-                }
-		//============ Ay ===================
-                else if(count3<=(2*kk0*N*(N - 1)/2)){                   
-		    dy(iy,jy)= bmin + (bmax - bmin)*rr.doub();
-		    dy(jy, iy) = dy(iy, jy);
-		    kky++;
-		    if (kky == kk0){
-			kky = 0;
-			jy++;
-			if (jy == N){
-			  iy++;
-			  if (iy == N - 1) iy = 0;
-			  jy = iy + 1;
+			if (CheckOverlap(Basis) == 1){
+			    NewE = NewEnergy(Basis, C, D, E, EE);
+			    if (NewE < minE) {
+			    	minE = NewE;
+			    	xx=1;
+			    	State=NewState;
+	
+			    	mindx=dx;
+			    	mindy=dy;
+			    	mindz=dz;
+			    }
+			    count2 = 0;
 			}
-		    }
-		    NewState.Ay = A(dy);
-                }
-		//============ Az ===================
-                else{                   
-		  dz(iz,jz)= bmin + (bmax - bmin)*rr.doub();
-		  dz(jz, iz) = dz(iz, jz);
-		  kkz++;
-		  if (kkz == kk0){ 
-		    kkz = 0;
-		    jz++;
-		    if (jz == N){
-		      iz++;
-		      if (iz == N - 1) iz = 0;
-		      jz = iz + 1;
-		    }
-		  }
-		  NewState.Az = A(dz);
-                }
-                //================end z===================
-                if(count3==3*kk0*N*(N - 1)/2) count3=0;
+            count1++;
+		
+			if(count1%kk0==0){ 
+				dx=mindx;
+				dy=mindy;
+				dz=mindz;
+			}
+
+			count2++;
+			if (count2 > 200){
+			  State.Ax=NewState.Ax;
+			  State.notdefined = true;
+			  cout << "count2"    << "\n";
+			  break;
+			}
+
+			//============ Ax ===================
+			count3++;
+	        if(count3<=kk0*N*(N - 1)/2){                   
+				dx(ix,jx)= bmin + (bmax - bmin)*rr.doub();
+				dx(jx, ix) = dx(ix, jx);
+				kkx++;
+				if (kkx == kk0){
+					kkx = 0;
+					jx++;
+					if (jx == N){
+						ix++;
+						if (ix == N - 1) ix = 0;
+						jx = ix + 1;
+					}
+				}
+				NewState.Ax = A(dx);
+	        }
+			//============ Ay ===================
+            else if(count3<=(2*kk0*N*(N - 1)/2)){                   
+				dy(iy,jy)= bmin + (bmax - bmin)*rr.doub();
+				dy(jy, iy) = dy(iy, jy);
+				kky++;
+				if (kky == kk0){
+					kky = 0;
+					jy++;
+					if (jy == N){
+						iy++;
+						if (iy == N - 1) iy = 0;
+						jy = iy + 1;
+					}
+				}
+				NewState.Ay = A(dy);
+			}
+			//============ Az ===================
+            else{                   
+				dz(iz,jz)= bmin + (bmax - bmin)*rr.doub();
+				dz(jz, iz) = dz(iz, jz);
+				kkz++;
+					if (kkz == kk0){ 
+						kkz = 0;
+						jz++;
+						if (jz == N){
+							iz++;
+							if (iz == N - 1) iz = 0;
+							jz = iz + 1;
+						}
+					}
+				NewState.Az = A(dz);
+            }
+            
+        	//================end z===================
+        	if(count3==3*kk0*N*(N - 1)/2) count3=0;
           
-		Basis[Bsize] = NewState;
-		UpdateNorm(Basis);
-		UpdateHamiltonian(Basis);
-	}
-        if(xx==0){
-         count4++;
-         dx = Dmatrix();
-         dy = Dmatrix();
-         dz = Dmatrix();
-	 int ts=ChooseSTstate();
-         NewState.set(A(dx),A(dy),A(dz),ts);
-	 Basis[Bsize]=NewState;
-	 UpdateNorm(Basis);
-	 UpdateHamiltonian(Basis);
-         State.Ax=NewState.Ax; State.notdefined = true;
-         }
-         if(xx==1) break;
-} 
+			Basis[Bsize] = NewState;
+			UpdateNorm(Basis);
+			UpdateHamiltonian(Basis);
+		}
+		if(xx==0){
+			count4++;
+			dx = Dmatrix();
+			dy = Dmatrix();
+			dz = Dmatrix();
+			int ts=ChooseSTstate();
+			NewState.set(A(dx),A(dy),A(dz),ts);
+			Basis[Bsize]=NewState;
+			UpdateNorm(Basis);
+			UpdateHamiltonian(Basis);
+			State.Ax=NewState.Ax; State.notdefined = true;
+		}
+        if(xx==1) break;
+	} 
 	return State;
 }
 //=============================================================================

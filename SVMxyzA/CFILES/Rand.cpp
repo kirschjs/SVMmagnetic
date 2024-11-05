@@ -15,6 +15,7 @@ unsigned long long int Rand::int64() {
 	unsigned long long int x = u ^ (u << 21); x ^= x >> 35; x ^= x << 4;
 	return (x + v) ^ w;
 }
+// returns a number in [ -0.5 , 0.5 ]
 double Rand::doub() { return 5.42101086242752217E-20 * int64(); }
 unsigned int Rand::int32() { return (unsigned int)int64(); }
 Rand::~Rand()

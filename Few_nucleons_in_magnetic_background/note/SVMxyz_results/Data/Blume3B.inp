@@ -1,0 +1,33 @@
+!
+    npar=3
+!   masses
+    xm(1)=1 xm(2)=1  xm(3)=1        
+!   charges
+    z(1)=0  z(2)=0  z(3)=0
+!
+!   isospin configurations
+    nisc=1
+    cisc(1)=1  iso(1,1)=1  iso(2,1)=1  iso(3,1)=1 
+!    cisc(2)=1  iso(1,2)=1  iso(2,2)=1  iso(3,2)=1 
+!
+!   spin configurations
+    nspc=1
+    cspc(1)=1  isp(1,1)=1  isp(2,1)=1  isp(3,1)=2 
+!   cspc(2)=1  isp(1,2)=1  isp(2,2)=1  isp(3,2)=1 
+!
+    h2m=1
+    irand=-1776  ico=2  ibf=1
+    mm0=3  kk0=3  mnb=50
+    bmin=0.1  bmax=12
+    BoxSize=12.5  dmax=4
+!
+!   selecting representation
+    ipcon=1
+!
+!   number of potential terms and operators
+    npt=1  nop=1
+    vpot(1,1)=-5.36639      apot(1,1)=2  bpot(1,1)=0  npot(1,1)=0
+!
+!   3-body potential
+!    vpot3b=677.7989      apot3b=1
+

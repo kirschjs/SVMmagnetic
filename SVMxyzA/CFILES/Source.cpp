@@ -40,10 +40,9 @@ int main(int argc, char* argv[])
     cout << " jobname = " << jobname << "\n";
     Input input("./input/"+jobname+".inp");
     input.print();
-    //===========
+
     ifstream  srcc("./input/"+jobname+".inp");
     cout<< srcc.rdbuf();
-
 
     ifstream  src("./input/"+jobname+".inp");
     ofstream  dst("./output/"+jobname+".txt");
@@ -52,6 +51,7 @@ int main(int argc, char* argv[])
 
     /* Initialize the random numbr generator */
     Rand rand(input.irand);
+    
     /* Initialize SVM  */
     printf("\n\t Initialize SVM \n");
     SVM svm(rand, input);
@@ -66,6 +66,7 @@ int main(int argc, char* argv[])
       cout << "finding new state with appropriate overloop failed" << endl << endl;
       return 0; 
     }
+
     /* start SVM iterations */
     Basis.push_back(NewState);
     svm.UpdateNorm(Basis);
@@ -81,59 +82,75 @@ int main(int argc, char* argv[])
     vector<double> dE;
     GeneralizedSelfAdjointEigenSolver<MatrixXd> ges;
     printf("\t Start SVM iters\n\n");
-	int itr = 1;
-	while (itr < input.maxbasis)
+  	int itr = 1;
+  	while (itr < input.maxbasis)
 	  {
-	    Norm = svm.NormMatrix(Basis);
-	    H    = svm.HamiltonianMatrix(Basis);
-//	    cout << "H\n" << H    << "\n";
-//	    cout << "N\n" << Norm << "\n";
-	    ges.compute(H, Norm);
-	    C = ges.eigenvectors();
-	    D = ges.eigenvalues();
-      std::sort(D(0),D(2));      
-	    E = D.minCoeff();
+        Norm = svm.NormMatrix(Basis);
+        H    = svm.HamiltonianMatrix(Basis);
+        //cout << "H\n" << H    << "\n";
+  	    ges.compute(H, Norm);
+  	    C = ges.eigenvectors();
+  	    D = ges.eigenvalues();
+    
+        // state to optimize; if there are less EV, use the largest
+        
+        int iScen = 80;
+        if (itr < iScen ){
+            E = D.minCoeff();
             if (itr == 1)  EE = E + abs(E / 2);
-            dE.push_back(abs((EE - E) / E));
-	    printf("\t iter = %4d     E = %14.8f    dE = %14.8f Dt = %14.8f\n",itr,E,dE[itr-1],E);
-//==================
+        }
+        else{
+            int iOpt = 3;//min(itr/iScen,1);
+            E = D(iOpt);
+            if (itr%20==0){
+              EE = E + abs(D(iOpt-1)-D(iOpt) ) / 2;
+              cout << " minimizing eigenstate " << iOpt << "\n";
+              cout << " E = " << E << "; dE = " << EE;
+            }
+        }
+
+        
+        dE.push_back(abs((EE - E) / E));
+  	    printf("\t iter = %4d     E = %14.8f    dE = %14.8f\n",itr,E,dE[itr-1]);
+  
+        dst.open("./output/"+jobname+".txt", ios::app);
+        dst<<"      itr= "<<itr<<"        E= "<<fixed<<E<<endl;
+        dst.close();
+        if(dE[itr-1] > pow(10, -5)) n_accuracy=1;
+        if(dE[itr-1] < pow(10, -5)) n_accuracy++;
+        //if(n_accuracy==10) break;
+        
+        // Arguments: old basis, eigen ve<C>tors and eigen values<D> of the old basis
+        //                                  GS  
+        NewState = svm.NewState(Basis, C, D, E, EE);
+  	    if (NewState.notdefined){
+            cout << "Failed to find a new state with lower energy" << endl << endl;
+            break;
+        }	   
+  	    Basis[itr] = NewState;
+  	    svm.UpdateNorm(Basis);
+  	    svm.UpdateHamiltonian(Basis);
+
+        EE = E;  
+        if(itr%5==0)
+        {
             dst.open("./output/"+jobname+".txt", ios::app);
-            dst<<"      itr= "<<itr<<"        E= "<<fixed<<E<<endl;
+            dst<<"  more eigenvalues=  ";
+            cout<<"   more eigenvalues=  ";
+            // for(int ii=1; ii<itr-1; ii++)
+            int nbrevprint = itr;
+            if(itr > 30) nbrevprint = 30;
+             for(int ii=0; ii<nbrevprint; ii++)
+            {
+                 dst<<D(ii)<<"  ";
+                 cout<<D(ii)<<"  ";
+            }
+            dst<<endl;
             dst.close();
-//==================
-
-
-
-            if(dE[itr-1] > pow(10, -5)) n_accuracy=1;
-            if(dE[itr-1] < pow(10, -5)) n_accuracy++;
-            //if(n_accuracy==10) break;
-            NewState = svm.NewState(Basis, C, D, E, EE);
-	    if (NewState.notdefined){
-	      cout << "Failed to find a new state with lower energy" << endl << endl;
-	      break;}	   
-	    Basis[itr] = NewState;
-	    svm.UpdateNorm(Basis);
-	    svm.UpdateHamiltonian(Basis);
-            EE = E;  
-            if(itr%5==0)
-               {
-                  dst.open("./output/"+jobname+".txt", ios::app);
-                  dst<<"  more eigenvalues=  ";
-                  cout<<"   more eigenvalues=  ";
-                 // for(int ii=1; ii<itr-1; ii++)
-                  int nbrevprint = itr;
-                  if(itr > 30) nbrevprint = 30;
-                   for(int ii=1; ii<nbrevprint; ii++)
-                  {
-                       dst<<D(ii)<<"  ";
-                       cout<<D(ii)<<"  ";
-                  }
-                  dst<<endl;
-                  dst.close();
-                  cout<<endl;
-               }
-           itr = itr + 1;
-	  }
+            cout<<endl;
+        }
+        itr = itr + 1;
+    }
 
 clock_t end = clock();
 double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

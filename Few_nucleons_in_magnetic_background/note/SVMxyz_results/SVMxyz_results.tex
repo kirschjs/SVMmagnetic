@@ -1,0 +1,45 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\begin{document}
+    \begin{center}
+        \vspace*{1cm}        
+        \Large
+        \textbf{SVM for pionless EFT}
+        \vspace{0.5cm}
+        \LARGE               
+    \end{center}
+
+For the potential
+$$V=C_2\sum_{i<j}e^{-ar_{ij}^2}+C_3\sum_{i<j}P_{\sigma_i\cdot \sigma_j} e^{-ar_{ij}^2}+D\sum_{cyc} \sum_{i<j<k} e^{-a(r_{ik}^2+r_{jk}^2)}$$
+The LECs of pionless EFT are 
+\begin{center}
+\begin{tabular}{| l | l | l | l | l |}
+\hline
+$\Lambda^{(1)}$ & $C_1$ & $C_3$  & $D$  \\ \hline
+ $2$ & $-123.6692562$ & $-18.69857216$ &  $65.66539381$   \\ \hline
+ $4$ & $-468.6906128$ & $-36.47987366$ &  $661.4836412$   \\ \hline
+ $6$ & $-1036.326942$ & $-54.26539235$ &  $2586.139045$   \\ \hline
+\end{tabular}
+\\ $^{(1)} a=\Lambda^2/4$
+\end{center}
+The results from $"mySVMxyzIBC$ programe are
+\begin{center}
+\begin{tabular}{| l | l | l | l | l |}
+\hline
+system & $\Lambda$ & Energy (Mev) & Other code &Exprimental \\ \hline
+deuteron    & $2$ & $-2.225$   & $-2.2245$ & $-2.22486$     \\ \hline
+deuteron    & $4$ & $-2.225$   & $-2.2245$ & $-2.22486$     \\ \hline
+deuteron    & $6$ & $-2.219$   & $-2.2245$ & $-2.22486$     \\ \hline
+triton      & $2$ & $-8.475$   & $-8.482$ & $-8.481821$    \\ \hline
+triton      & $4$ & $-8.440$   & $-8.482$ & $-8.481821$    \\ \hline
+triton      & $6$ & $-8.379$   & $-8.482$ & $-8.481821$    \\ \hline
+helium4     & $2$ & $-23.675$   & $-23.71$       & $-28.3^{(1)}$  \\ \hline
+helium4     & $4$ & $-23.767$   & $-23.91$       & $-28.3^{(1)}$  \\ \hline
+helium4     & $6$ & $-24.966$   & $-25.33$       & $-28.3^{(1)}$  \\ \hline
+\end{tabular}
+\\$^{(1)}$ Extrapolation to $\Lambda \rightarrow \infty$ gives $E=28\pm2$
+\\It's possible to wait longer for better convergence...
+\end{center}
+The input files for the Deuteron, Triton, and Helium4 are in the input folder. 
+The parameter $eB$ (electron charge multiplied by the magnetic field) is a new parameter in the input files and now it set to zero.
+\end{document}

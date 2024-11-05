@@ -5,7 +5,7 @@ import numpy as np
 plt.style.use('bmh')
 
 offs = 3
-sysem = 'np_singlet_4_806'
+#sysem = 'np_singlet_4_806'
 sysem = 'np_3dosci_806'
 infile = '/home/kirscher/kette_repo/SVMmagnetic/SVMxyzA/output/%s.txt' % sysem
 data = [line for line in open(infile)]
@@ -14,9 +14,10 @@ e0 = []
 for n in range(1, len(data)):
     if re.search('more eigenvalues', data[n]):
         evs.append(data[n].split('=')[1].split())
-        e0.append(float(data[n - 1].split('=')[2]))
+        e0.append(float(data[n].split('=')[1].split()[0]))
 
-datay = np.append(e0[-1], np.array([float(ev) for ev in evs[-1]]))
+bv2show = 15
+datay = np.append(e0[-1], np.array([float(ev) for ev in evs[-1][:bv2show]]))
 
 print(np.diff(datay), datay, e0[-1])
 

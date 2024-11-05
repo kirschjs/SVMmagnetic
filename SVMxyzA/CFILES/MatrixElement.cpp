@@ -164,17 +164,20 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 	    *(TTx.trace()+TTy.trace()+TTz.trace())*x;
 	
 		// 3d isotropic single-particle harmonic oscilator
+/*
 	    MagneticEnergyT =  MagneticEnergyT + parity[iperm]
 		    				 * stmeop[ijts].perm[iperm].op1b[0].me(0)
 			 				 * (InvAAx.trace()+InvAAy.trace()+InvAAz.trace())
 			 				 * x;
-
-/*        // Magnetic Energy (single-particle version)
-      	for (int ipar = 0 ; ipar < npar ; ipar++){
-		    MagneticEnergyT = MagneticEnergyT + parity[iperm] * 
-			magnetic_charge_me[iperm*npar+ipar] * (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)) * x;
-      	}//--i
 */
+        // Magnetic Energy (single-particle version)
+      	for (int ipar = 0 ; ipar < npar ; ipar++){
+		    MagneticEnergyT = MagneticEnergyT + parity[iperm] 
+			* stmeop[ijts].perm[iperm].op1b[0].me(ipar)
+			* (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)+InvAAz(ipar,ipar))
+			* x;
+      	}//--i
+
 /*	
 	// =============MagneticEnergy=======================================================  
 	int ipair = 0;			

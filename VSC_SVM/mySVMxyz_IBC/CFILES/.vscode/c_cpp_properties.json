@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/CFILES",
+                "/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/eigen/Eigen"
+            ],
+            "defines": [],
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPath": "/opt/intel/oneapi/compiler/2024.1/bin/icpx"
+        }
+    ],
+    "version": 4
+}

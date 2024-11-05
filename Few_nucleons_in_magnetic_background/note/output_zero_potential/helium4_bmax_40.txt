@@ -1,0 +1,157 @@
+!
+  npar=4
+!     masses
+  xm(1)=1.  xm(2)=1. xm(3)=1.  xm(4)=1.      
+!     charges
+  z( 1)=0.  z( 2)=0. z( 3)=0.  z( 4)=0.
+!
+!     isospin configurations
+  nisc=4
+    cisc(1)= 1. iso(1,1)=1 iso(2,1)=1 iso(3,1)=2  iso(4,1)=2
+    cisc(2)=-1. iso(1,2)=1 iso(2,2)=2 iso(3,2)=1  iso(4,2)=2
+    cisc(3)=-1. iso(1,3)=2 iso(2,3)=1 iso(3,3)=1  iso(4,3)=2
+    cisc(4)= 1. iso(1,4)=2 iso(2,4)=2 iso(3,4)=1  iso(4,4)=1
+!
+!     spin configurations
+  nspc=4
+    cspc(1)= 1. isp(1,1)=1 isp(2,1)=2 isp(3,1)=1  isp(4,1)=2
+    cspc(2)=-1. isp(1,2)=1 isp(2,2)=2 isp(3,2)=2  isp(4,2)=1
+    cspc(3)=-1. isp(1,3)=2 isp(2,3)=1 isp(3,3)=1  isp(4,3)=2
+    cspc(4)= 1. isp(1,4)=2 isp(2,4)=1 isp(3,4)=2  isp(4,4)=1
+!
+    h2m=41.47
+    irand=-1776 ibf=1
+    eB=0.0241138  momega=0.000001
+    mm0=10  kk0=10  mnb=400
+  bmin=0.01 bmax=40 
+!
+! Pionless EFT LO Potential
+! number of potential terms and operators
+  npt=1  nop=3
+ vpot(1,1)=0        apot(1,1)=1   bpot(1,1)=0  npot(1,1)=0
+ vpot(1,3)=0	    apot(1,3)=1   bpot(1,3)=0  npot(1,3)=0 
+ vpot3b=0           apot3b=1
+      itr= 1        E= 1.857157
+      itr= 2        E= 1.857157
+      itr= 3        E= 1.857157
+      itr= 4        E= 1.857157
+      itr= 5        E= 1.857157
+  more eigenvalues=  1351.183481  23657.846410  53088.512344  
+      itr= 6        E= 1.857115
+      itr= 7        E= 1.855039
+      itr= 8        E= 1.754903
+      itr= 9        E= 1.737186
+      itr= 10        E= 1.735552
+  more eigenvalues=  2.688212  4.796469  8.560461  
+      itr= 11        E= 1.702791
+      itr= 12        E= 1.683854
+      itr= 13        E= 1.669708
+      itr= 14        E= 1.664793
+      itr= 15        E= 1.661012
+  more eigenvalues=  2.215152  2.813113  3.009792  
+      itr= 16        E= 1.660108
+      itr= 17        E= 1.658875
+      itr= 18        E= 1.658686
+      itr= 19        E= 1.653092
+      itr= 20        E= 1.651754
+  more eigenvalues=  2.185043  2.677136  2.862440  
+      itr= 21        E= 1.649414
+      itr= 22        E= 1.649241
+      itr= 23        E= 1.649098
+      itr= 24        E= 1.649011
+      itr= 25        E= 1.647395
+  more eigenvalues=  2.161130  2.595563  2.841771  
+      itr= 26        E= 1.646380
+      itr= 27        E= 1.645297
+      itr= 28        E= 1.644052
+      itr= 29        E= 1.643533
+      itr= 30        E= 1.643311
+  more eigenvalues=  2.131685  2.582919  2.812861  
+      itr= 31        E= 1.643191
+      itr= 32        E= 1.642972
+      itr= 33        E= 1.642962
+      itr= 34        E= 1.642880
+      itr= 35        E= 1.641910
+  more eigenvalues=  2.126981  2.572169  2.783742  
+      itr= 36        E= 1.641853
+      itr= 37        E= 1.640880
+      itr= 38        E= 1.640736
+      itr= 39        E= 1.640388
+      itr= 40        E= 1.640156
+  more eigenvalues=  2.119348  2.500445  2.780984  
+      itr= 41        E= 1.639909
+      itr= 42        E= 1.639714
+      itr= 43        E= 1.639678
+      itr= 44        E= 1.639511
+      itr= 45        E= 1.639084
+  more eigenvalues=  2.113154  2.488257  2.779757  
+      itr= 46        E= 1.638967
+      itr= 47        E= 1.638909
+      itr= 48        E= 1.638865
+      itr= 49        E= 1.636776
+      itr= 50        E= 1.635975
+  more eigenvalues=  2.102368  2.437302  2.764570  
+      itr= 51        E= 1.635733
+      itr= 52        E= 1.635298
+      itr= 53        E= 1.634793
+      itr= 54        E= 1.634708
+      itr= 55        E= 1.634696
+  more eigenvalues=  2.090883  2.433409  2.758953  
+      itr= 56        E= 1.634652
+      itr= 57        E= 1.634484
+      itr= 58        E= 1.634411
+      itr= 59        E= 1.634401
+      itr= 60        E= 1.633933
+  more eigenvalues=  2.085378  2.416060  2.756565  
+      itr= 61        E= 1.633598
+      itr= 62        E= 1.632861
+      itr= 63        E= 1.632624
+      itr= 64        E= 1.632451
+      itr= 65        E= 1.632410
+  more eigenvalues=  2.077404  2.388122  2.744586  
+      itr= 66        E= 1.632190
+      itr= 67        E= 1.631825
+      itr= 68        E= 1.631759
+      itr= 69        E= 1.631082
+      itr= 70        E= 1.631030
+  more eigenvalues=  2.069925  2.381678  2.740316  
+      itr= 71        E= 1.630474
+      itr= 72        E= 1.630271
+      itr= 73        E= 1.630234
+      itr= 74        E= 1.630186
+      itr= 75        E= 1.630154
+  more eigenvalues=  2.066526  2.377050  2.739391  
+      itr= 76        E= 1.629994
+      itr= 77        E= 1.629970
+      itr= 78        E= 1.629951
+      itr= 79        E= 1.629845
+      itr= 80        E= 1.629802
+  more eigenvalues=  2.063890  2.373515  2.738745  
+      itr= 81        E= 1.629736
+      itr= 82        E= 1.629661
+      itr= 83        E= 1.629609
+      itr= 84        E= 1.629575
+      itr= 85        E= 1.629537
+  more eigenvalues=  2.062462  2.372154  2.737726  
+      itr= 86        E= 1.629484
+      itr= 87        E= 1.629475
+      itr= 88        E= 1.629272
+      itr= 89        E= 1.629259
+      itr= 90        E= 1.629205
+  more eigenvalues=  2.061072  2.366909  2.736497  
+      itr= 91        E= 1.629106
+      itr= 92        E= 1.629094
+      itr= 93        E= 1.629072
+      itr= 94        E= 1.629049
+      itr= 95        E= 1.628954
+  more eigenvalues=  2.058906  2.363558  2.736231  
+      itr= 96        E= 1.628951
+      itr= 97        E= 1.628880
+      itr= 98        E= 1.628834
+      itr= 99        E= 1.628707
+      itr= 100        E= 1.628677
+  more eigenvalues=  2.057989  2.362303  2.733866  
+      itr= 101        E= 1.628583
+      itr= 102        E= 1.628510
+      itr= 103        E= 1.628236
+      itr= 104        E= 1.627890

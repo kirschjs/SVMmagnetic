@@ -19,8 +19,8 @@
 
     irand=-1776 ibf=1
     eB=0
-    mm0=15  kk0=15  mnb=140
-    bmin=0.01  bmax=6
+    mm0=15  kk0=15  mnb=150
+    bmin=0.0001  bmax=5
 !
 ! Pionless EFT LO Potential
 ! number of potential terms and operators

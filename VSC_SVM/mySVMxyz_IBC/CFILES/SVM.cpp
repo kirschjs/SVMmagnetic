@@ -5,7 +5,10 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <omp.h>  // OpenMP for parallelization
 #include <Eigen> 
+
+
 using namespace Eigen;
 
 SVM::SVM(Rand &r, Input &input) :rr(r), me(input)
@@ -197,6 +200,7 @@ MatrixXd SVM::A(MatrixXd d)
 	      for (int k = 0; k < N; k++){
 			if (i != k) A(i, j) = A(i, j) + 2 * pow(d(i, k), -2);
 	      }
+		  if(N==2) A(i, j) = A(i, j) + 4.83*rr.doub() * pow(bmin + (bmax - bmin)*rr.doub(), -1);
 	    }
 	    else{
 	      A(i, j) = -2 * pow(d(i, j), -2);
@@ -215,7 +219,6 @@ vector<MatrixXd> SVM::FirstNewState()
 {
 	vector<MatrixXd> NewState;
 	
-
 	NewState.push_back(A(Dmatrix()));  //x
 	NewState.push_back(A(Dmatrix()));  //y
 	NewState.push_back(A(Dmatrix()));  //z
@@ -434,6 +437,143 @@ vector<MatrixXd> SVM::NewState(vector<vector<MatrixXd>> Basis, MatrixXd C, Vecto
 	//cout<<"count4=  "<<count4<<endl;
 	return State;
 }
+
+//=============================non linear optimization=======================
+
+// vector<MatrixXd> SVM::NewState(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, double E, double EE) {
+//     vector<MatrixXd> NewState;
+
+//     // Initialize D-matrices
+//     MatrixXd dx = Dmatrix(); // x-axis
+//     MatrixXd dy = Dmatrix(); // y-axis
+//     MatrixXd dz = Dmatrix(); // z-axis
+
+//     // Add initial state to Basis
+//     NewState.push_back(A(dx));
+//     NewState.push_back(A(dy));
+//     NewState.push_back(A(dz));
+
+//     Basis.push_back(NewState);
+//     UpdateNorm(Basis);
+//     UpdateHamiltonian(Basis);
+
+//     int Bsize = Basis.size() - 1;
+
+//     // Parameters for optimization
+//     double learning_rate = 0.05; // Initial step size
+//     double decay_rate = 0.99;    // Step size decay
+//     int max_iterations = 1000;  // Maximum number of iterations
+//     double tolerance = 1e-8;    // Convergence threshold
+
+//     double minEnergy = E;
+//     double currentEnergy = E;
+
+//     MatrixXd best_dx = dx;
+//     MatrixXd best_dy = dy;
+//     MatrixXd best_dz = dz;
+
+//     // Gradient matrices
+//     MatrixXd grad_dx(dx.rows(), dx.cols());
+//     MatrixXd grad_dy(dy.rows(), dy.cols());
+//     MatrixXd grad_dz(dz.rows(), dz.cols());
+
+//     for (int iter = 0; iter < max_iterations; ++iter) {
+//         // Update NewState with current dx, dy, dz
+//         NewState[0] = A(dx);
+//         NewState[1] = A(dy);
+//         NewState[2] = A(dz);
+
+//         Basis[Bsize] = NewState;
+//         UpdateNorm(Basis);
+//         UpdateHamiltonian(Basis);
+
+//         currentEnergy = NewEnergy(Basis, C, D, E, EE);
+
+//         // Update minimum energy and save best states
+//         if (currentEnergy < minEnergy) {
+//             minEnergy = currentEnergy;
+//             best_dx = dx;
+//             best_dy = dy;
+//             best_dz = dz;
+
+//             if (std::abs(currentEnergy - minEnergy) < tolerance) {
+//                 break;
+//             }
+//         }
+
+//         // Gradient approximation using finite difference
+//         double delta = 1e-5;
+
+//         for (int i = 0; i < dx.rows(); ++i) {
+//             for (int j = 0; j < dx.cols(); ++j) {
+//                 dx(i, j) += delta;
+//                 Basis[Bsize][0] = A(dx);
+//                 UpdateNorm(Basis);
+//                 UpdateHamiltonian(Basis);
+//                 double energy_dx = NewEnergy(Basis, C, D, E, EE);
+//                 dx(i, j) -= delta;
+
+//                 grad_dx(i, j) = (energy_dx - currentEnergy) / delta;
+//             }
+//         }
+
+//         for (int i = 0; i < dy.rows(); ++i) {
+//             for (int j = 0; j < dy.cols(); ++j) {
+//                 dy(i, j) += delta;
+//                 Basis[Bsize][1] = A(dy);
+//                 UpdateNorm(Basis);
+//                 UpdateHamiltonian(Basis);
+//                 double energy_dy = NewEnergy(Basis, C, D, E, EE);
+//                 dy(i, j) -= delta;
+
+//                 grad_dy(i, j) = (energy_dy - currentEnergy) / delta;
+//             }
+//         }
+
+//         for (int i = 0; i < dz.rows(); ++i) {
+//             for (int j = 0; j < dz.cols(); ++j) {
+//                 dz(i, j) += delta;
+//                 Basis[Bsize][2] = A(dz);
+//                 UpdateNorm(Basis);
+//                 UpdateHamiltonian(Basis);
+//                 double energy_dz = NewEnergy(Basis, C, D, E, EE);
+//                 dz(i, j) -= delta;
+
+//                 grad_dz(i, j) = (energy_dz - currentEnergy) / delta;
+//             }
+//         }
+
+//         // Nonlinear gradient transform.
+//         grad_dx = grad_dx.array().tanh();
+//         grad_dy = grad_dy.array().tanh();
+//         grad_dz = grad_dz.array().tanh();
+
+        
+//         dx -= learning_rate * grad_dx;
+//         dy -= learning_rate * grad_dy;
+//         dz -= learning_rate * grad_dz;
+
+      
+//         learning_rate *= decay_rate;
+
+//         if (iter % 100 == 0) {
+//             std::cout << "Iteration: " << iter << " | Energy: " << currentEnergy << std::endl;
+//         }
+//     }
+
+    
+//     vector<MatrixXd> State;
+//     State.push_back(A(best_dx));
+//     State.push_back(A(best_dy));
+//     State.push_back(A(best_dz));
+
+//     return State;
+// }
+
+
+
+
+//===========================end here =======================================
 
 // calculate and return the norm matrix of a basis
 MatrixXd SVM::NormMatrix(vector<vector<MatrixXd>> Basis)

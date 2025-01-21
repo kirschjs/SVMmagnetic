@@ -19,6 +19,9 @@ public:
 	double IsospinOp(std::vector<int> tz1, std::vector<int> tz2, int i, int j, VectorXi Perm, int kind);
 	double O_0(int i1, int i2, int i3, int i4);
 	double O_1(int i1, int i2, int i3, int i4);
+	
+    double O_2(int i1, int i2, int i3, int i4);  // Add this
+    double O_3(int i1, int i2, int i3, int i4); 
 	~Operators();
 };
 #endif 

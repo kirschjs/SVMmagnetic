@@ -1,5 +1,5 @@
-#include "/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/CFILES/Input.h"
-#include "/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/CFILES/Rand.h"
+#include "/home/sourav/svm/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/CFILES/Input.h"
+#include "/home/sourav/svm/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/CFILES/Rand.h"
 #include "SVM.h"
 #include "MatrixElement.h"
 
@@ -24,7 +24,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	clock_t begin = clock();
+  	clock_t begin = clock();
 	
 	string jobname;
 	
@@ -32,8 +32,7 @@ int main(int argc, char* argv[])
 	if (argc < 2) { jobname = "default_2body"; }
 	// run with specified input
 	else { jobname = argv[1]; } 
-
-	Input input("/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/input/"+jobname+".inp");
+	Input input("/home/sourav/svm/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/input/"+jobname+".inp");
 	input.print();
 
     ifstream  srcc("./input/"+jobname+".inp");
@@ -74,6 +73,7 @@ int main(int argc, char* argv[])
 	VectorXd D;
 	double E;
 	double EE;
+	double bmin,bmax ,b;
     int n_accuracy=1;
     vector<double> dE;
 	GeneralizedSelfAdjointEigenSolver<MatrixXd> ges;
@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
         //if(n_accuracy==10) break;
 
 		// algorithm as in https://inspirehep.net/literature/398252
-        NewState = svm.NewState(Basis, C, D, E, EE);
+        NewState = svm.NewState(Basis, C, D, E, EE  );
 	    if (NewState[0](0, 0) == 2000)
 	    {
 			cout << "finding new state with lower energy failed" << endl << endl;
@@ -114,11 +114,13 @@ int main(int argc, char* argv[])
         EE = E;  
         if(itr%5==0)
         {
+			int outtmp = 5;
+			if(itr > 35) outtmp = 40;
             dst.open("./output/"+jobname+".txt", ios::app);
             dst<<"  more eigenvalues=  ";
             cout<<"   more eigenvalues=  ";
             // for(int ii=1; ii<itr-1; ii++)
-            for(int ii=0; ii<2; ii++)
+            for(int ii=0; ii<outtmp; ii++)
             {
                 dst<<D(ii)<<"  ";
                 cout<<D(ii)<<"  ";

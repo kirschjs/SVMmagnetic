@@ -24,12 +24,27 @@ public:
 	vector<MatrixXd> FirstNewState();
 	double NewEnergy(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, double E, double EE);
 	vector<MatrixXd> NewState(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, double E, double EE);
+	MatrixXd ApproximateGradient(MatrixXd candidate, 
+                                 vector<vector<MatrixXd>>& Basis, 
+                                 int Bsize, 
+                                 MatrixXd C, 
+                                 VectorXd D, 
+                                 double E, 
+                                 double EE, 
+                                 double currentEnergy, 
+                                 int axis);
+
 	MatrixXd Dmatrix();
 	MatrixXd A(MatrixXd d);
 	MatrixXd CalcNormMatrix(vector<vector<MatrixXd>> Basis);
 	MatrixXd CalcHamiltonianMatrix(vector<vector<MatrixXd>> Basis);
 	MatrixXd NormMatrix(vector<vector<MatrixXd>> Basis);
 	MatrixXd HamiltonianMatrix(vector<vector<MatrixXd>> Basis);
+	MatrixXd computeGradient(const MatrixXd& matrix, int index,
+	              vector<vector<MatrixXd>>& Basis, int Bsize, MatrixXd C, VectorXd D, double E, double EE);
+
+	//vector<MatrixXd> GetGroundState();  // Declare the function
+    //vector<MatrixXd> GetFirstExcitedState();  // Declare the function
 
 	MatrixXd Hmatrix,Nmatrix;
 	

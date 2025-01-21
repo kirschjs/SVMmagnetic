@@ -97,7 +97,92 @@ double Operators::O_1(int i1, int i2, int i3, int i4) //permutation operator
 	if ((i1 == i4) && (i2 == i3)) x = 1;
 	return x;
 }
+//================================================
 
+
+
+//=============================================================================
+// Spin operator calculation: Includes even and odd contributions
+// double Operators::SpinOp(std::vector<int> sz1, std::vector<int> sz2, int i, int j, VectorXi Perm, int kind)
+// {
+// 	// Ensure symmetry under permutations for other particles
+// 	for (int ipar = 0; ipar < npar; ipar++) {
+// 		if ((ipar != i) && (ipar != j)) {
+// 			if (sz1[ipar] != sz2[Perm(ipar)]) return 0;
+// 		}
+// 	}
+
+// 	double even_part = 0, odd_part = 0;
+
+// 	// Even and odd contributions based on the operator kind
+// 	if (kind == 0) even_part = O_0(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);
+// 	if (kind == 1) even_part = O_1(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);
+// 	if (kind == 2) odd_part = O_2(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);
+// 	if (kind == 3) odd_part = O_3(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);
+
+// 	return even_part + odd_part;
+// }
+
+// //=============================================================================
+// // Isospin operator calculation: Includes even and odd contributions
+// double Operators::IsospinOp(std::vector<int> tz1, std::vector<int> tz2, int i, int j, VectorXi Perm, int kind)
+// {
+// 	// Ensure symmetry under permutations for other particles
+// 	for (int ipar = 0; ipar < npar; ipar++) {
+// 		if ((ipar != i) && (ipar != j)) {
+// 			if (tz1[ipar] != tz2[Perm(ipar)]) return 0;
+// 		}
+// 	}
+
+// 	double even_part = 0, odd_part = 0;
+
+// 	// Even and odd contributions based on the operator kind
+// 	if (kind == 0) even_part = O_0(tz1[i], tz1[j], tz2[Perm(i)], tz2[Perm(j)]);
+// 	if (kind == 1) even_part = O_1(tz1[i], tz1[j], tz2[Perm(i)], tz2[Perm(j)]);
+// 	if (kind == 2) odd_part = O_2(tz1[i], tz1[j], tz2[Perm(i)], tz2[Perm(j)]);
+// 	if (kind == 3) odd_part = O_3(tz1[i], tz1[j], tz2[Perm(i)], tz2[Perm(j)]);
+
+// 	return even_part + odd_part;
+// }
+
+// //=============================================================================
+// // Operator Definitions
+
+// // Identity operator: Symmetric
+// double Operators::O_0(int i1, int i2, int i3, int i4)
+// {
+// 	double x = 0;
+// 	if ((i1 == i3) && (i2 == i4)) x = 1.0; // Symmetric
+// 	return x;
+// }
+
+// // Permutation operator: Symmetric
+// double Operators::O_1(int i1, int i2, int i3, int i4)
+// {
+// 	double x = 0;
+// 	if ((i1 == i4) && (i2 == i3)) x = 1.0; // Symmetric
+// 	return x;
+// }
+
+// // Odd-parity operator: Antisymmetric
+// double Operators::O_2(int i1, int i2, int i3, int i4)
+// {
+// 	double x = 0;
+// 	if ((i1 == i4) && (i2 == i3)) x = -1.0; // Antisymmetric
+// 	return x;
+// }
+
+// // Odd-parity operator (another type): Antisymmetric
+// double Operators::O_3(int i1, int i2, int i3, int i4)
+// {
+// 	double x = 0;
+// 	if ((i1 == i3) && (i2 == i4)) x = -1.0; // Antisymmetric
+// 	return x;
+// }
+
+
+
+//================================================
 Operators::~Operators()
 {
 }

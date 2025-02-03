@@ -15,11 +15,11 @@
     cspc(1)= 1 isp(1,1)=1 isp(2,1)=2 
     cspc(2)= 1 isp(1,2)=2 isp(2,2)=1 
 !
-   ! h2m=41.47
+! h2m=41.47
     h2m = 1.0
     irand=-1776 ibf=1
     eB=1
-    mm0=15  kk0=15  mnb=400
+    mm0=15  kk0=15  mnb=200
     bmin=0.001  bmax=7.4
 !
 ! Pionless EFT LO Potential

@@ -7,6 +7,8 @@
 #include <cmath>
 #include <omp.h>  // OpenMP for parallelization
 #include <Eigen> 
+#include <random>
+#include <ctime>
 
 
 using namespace Eigen;
@@ -171,49 +173,127 @@ double SVM::NewEnergy(vector<vector<MatrixXd>> Basis, MatrixXd C, VectorXd D, do
 // instantiate a symmetric NxN matrix with elements randomly chosen 
 // from the interval [bmin,bmax]
 // d_ij controls the distance between particle i and j 
-MatrixXd SVM::Dmatrix()
-{
-	MatrixXd d = MatrixXd::Zero(N, N);
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = i + 1; j < N; j++)
-		{
-			d(i, j) = bmin + (bmax - bmin)*rr.doub();
-			d(j, i) = d(i, j);
-		}
-	}
-	return d;
+// MatrixXd SVM::Dmatrix()
+// {
+// 	MatrixXd d = MatrixXd::Zero(N, N);
+// 	for (int i = 0; i < N; i++)
+// 	{
+// 		for (int j = i + 1; j < N; j++)
+// 		{
+// 			d(i, j) = bmin + (bmax - bmin)*rr.doub();
+// 			d(j, i) = d(i, j);
+// 		}
+// 	}
+// 	return d;
+// }
+
+MatrixXd SVM::Dmatrix() {
+    MatrixXd d = MatrixXd::Zero(N, N);
+
+    // Use time-based seed for random number generation
+    std::default_random_engine generator(static_cast<unsigned>(time(0)));
+
+    // Lognormal distribution: parameters mu and sigma
+    double mu = std::log((bmin + bmax) / 2);  // Mean of lognormal distribution (log of the middle of bmin and bmax)
+    double sigma = 0.5;  // Standard deviation
+
+    std::lognormal_distribution<double> lognormal_dist(mu, sigma);  // Lognormal distribution
+
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            d(i, j) = lognormal_dist(generator);  // Generate a random lognormal value
+            d(j, i) = d(i, j);  
+        }
+    }
+    return d;
 }
+
 
 // take the D matrix and transform it into an A matrix, i.e., 
 // the corresponding quadratic form between single-particle coordinates
 // sum_{i<j}^N (x_i-x_j)^2/(2dij^2)-sum_i epsilon x_i^2 = -1/2 sum a_ij x_i x_j
+
+// this part is now close for checking purpose 
+// MatrixXd SVM::A(MatrixXd d)
+// {
+// 	MatrixXd A = MatrixXd::Zero(N, N);
+
+// 	for (int i = 0; i < N; i++){
+	  
+// 	  for (int j = i; j < N; j++){
+	    
+// 		if (i == j){
+// 	      for (int k = 0; k < N; k++){
+// 			if (i != k) A(i, j) = A(i, j) + 2 * pow(d(i, k), -2);
+// 	      }
+// 		   if(N==2) A(i, j) = A(i, j) + 500.1*rr.doub() * pow(bmin + (bmax - bmin)*rr.doub(), -1);
+// 	    }
+// 	    else{
+// 	      A(i, j) = -2 * pow(d(i, j), -2);
+// 	      A(j, i) = A(i, j);
+// 	    }
+// 	  }
+// 	}
+// 	for (int i = 0; i < N; i++)
+// 	{
+//             A(i, i) = A(i, i) + 1.e-6;	
+// 	}
+// 	return A;
+// }
+
 MatrixXd SVM::A(MatrixXd d)
 {
-	MatrixXd A = MatrixXd::Zero(N, N);
+    MatrixXd A = MatrixXd::Zero(N, N);
+    double epsilon = 1.e-4;  // Adaptive regularization factor
 
-	for (int i = 0; i < N; i++){
-	  
-	  for (int j = i; j < N; j++){
-	    
-		if (i == j){
-	      for (int k = 0; k < N; k++){
-			if (i != k) A(i, j) = A(i, j) + 2 * pow(d(i, k), -2);
-	      }
-		  if(N==2) A(i, j) = A(i, j) + 4.83*rr.doub() * pow(bmin + (bmax - bmin)*rr.doub(), -1);
-	    }
-	    else{
-	      A(i, j) = -2 * pow(d(i, j), -2);
-	      A(j, i) = A(i, j);
-	    }
-	  }
-	}
-	for (int i = 0; i < N; i++)
-	{
-            A(i, i) = A(i, i) + 1.e-6;	
-	}
-	return A;
+    // Construct the matrix
+    for (int i = 0; i < N; i++) {
+        for (int j = i; j < N; j++) {
+            if (i == j) {
+                for (int k = 0; k < N; k++) {
+                    if (i != k) A(i, j) += 2.0 * pow(d(i, k), -2);
+                }
+            } else {
+                A(i, j) = -2.0 * pow(d(i, j), -2);
+                A(j, i) = A(i, j);
+            }
+        }
+    }
+
+    // ensure diagonal dominance adaptively
+    for (int i = 0; i < N; i++) {
+        A(i, i) += epsilon * A.row(i).sum();  
+    }
+
+    // Special case for N == 2
+    if (N == 2) {
+        double scaleFactor = A.norm() / N;  //   scaling for large /small value 
+        for (int i = 0; i < N; i++) {
+            for (int j = i; j < N; j++) {
+                double randomFactor = scaleFactor * rr.doub() * pow(bmin + (bmax - bmin) * rr.doub(), -1);
+                A(i, j) += randomFactor; // to make the symmetric adding this afctor to all elements of this Matrix
+                A(j, i) = A(i, j);
+            }
+        }
+    }
+
+    //  for ensure positive definite and positove eigenvalue correction
+    Eigen::SelfAdjointEigenSolver<MatrixXd> es(A);
+    VectorXd eigenvalues = es.eigenvalues();
+    MatrixXd eigenvectors = es.eigenvectors();
+
+    double minEigenvalue = eigenvalues.minCoeff();
+    if (minEigenvalue < 0) {
+        eigenvalues.array() += fabs(minEigenvalue) + epsilon;  // Shifting  eigenvalues to  amke it positive 
+    }
+
+    A = eigenvectors * eigenvalues.asDiagonal() * eigenvectors.transpose();  // Reconstruct A using the form : V {eigenvalue fo A(ij) V^T
+
+    return A;
 }
+
+
+
 
 vector<MatrixXd> SVM::FirstNewState()
 {
@@ -257,6 +337,7 @@ vector<MatrixXd> SVM::FirstNewState()
 	  		e_overlap = me.overlap(NewState, NewState);
 			// abort if norm too small
 	  		if (e_overlap < 1e-8) continue;
+			
 	  		NewE = me.energy(NewState, NewState) / e_overlap;
 			// replace reference state
 	  		if (NewE < MinE)

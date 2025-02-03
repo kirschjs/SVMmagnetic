@@ -86,7 +86,7 @@ long double x;
           dety=(A1y+A2y).determinant();
           detz=(A1z+A2z).determinant();
       
-          x=1/sqrt(detx*dety*detz);//*detz);
+          x=1/sqrt(detx*detz);//*detz);
 	  overlap = overlap + parity[iperm]* stme[iperm*nPairs*nop] *x;
 	}
 	return overlap;
@@ -151,14 +151,14 @@ double MatrixElement::energy(std::vector<MatrixXd> state1, std::vector<MatrixXd>
       dety=(A1y+A2y).determinant();
       detz=(A1z+A2z).determinant();
       
-      x=1/sqrt(detx*dety*detz);//*detz);
+      x=1/sqrt(detx*detz);//*detz);
 
 
       // Kinetic Energy 
       TTx = A1x * InvAAx * A2x;
       TTy = A1y * InvAAy * A2y;
       TTz = A1z * InvAAz * A2z;
-      KinEnergy = KinEnergy + parity[iperm] * stme[iperm*nPairs*nop] *x *(TTx.trace()+TTy.trace()+TTz.trace());//+TTz.trace());
+      KinEnergy = KinEnergy + parity[iperm] * stme[iperm*nPairs*nop] *x *(TTx.trace()+TTz.trace());//+TTz.trace());
 //===============================================================
 //double sx,sy,sz, xme; 
 //=============MagneticEnergy====================================     
@@ -192,7 +192,7 @@ double MatrixElement::energy(std::vector<MatrixXd> state1, std::vector<MatrixXd>
    sx = InvAAx;
    sy = InvAAy;
    sz = InvAAz;
-   MagneticEnergy += parity[iperm] * stme[iperm*nPairs*nop]*  (sx.trace()+sy.trace()+sz.trace())*x;//+sz.trace())  * x;
+   MagneticEnergy += parity[iperm] * stme[iperm*nPairs*nop]* (sx.trace()+sz.trace())*x;//+sz.trace())  * x;
  //*(InvAAx.trace()+InvAAy.trace()+InvAAz.trace());
 
 

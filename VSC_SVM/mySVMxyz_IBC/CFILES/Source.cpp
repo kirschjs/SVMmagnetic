@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	string jobname;
 	
 	// in debugging mode, load the default input
-	if (argc < 2) { jobname = "default_2body"; }
+	if (argc < 2) { jobname = "default_3dHO"; }
 	// run with specified input
 	else { jobname = argv[1]; } 
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 
 	if (NewState[0](0, 0) == 2000)
 	{
-		cout << "finding new state with appropriate overloop failed" << endl << endl;
+		cout << "finding new state with appropriate overlap failed" << endl << endl;
 		return 0;
 	}
 
@@ -113,12 +113,13 @@ int main(int argc, char* argv[])
 	    svm.UpdateHamiltonian(Basis);
         EE = E;  
         if(itr%5==0)
-        {
+		{
+			int outtmp = min(itr,90);
             dst.open("./output/"+jobname+".txt", ios::app);
             dst<<"  more eigenvalues=  ";
             cout<<"   more eigenvalues=  ";
             // for(int ii=1; ii<itr-1; ii++)
-            for(int ii=0; ii<2; ii++)
+            for(int ii=0; ii<outtmp; ii++)
             {
                 dst<<D(ii)<<"  ";
                 cout<<D(ii)<<"  ";

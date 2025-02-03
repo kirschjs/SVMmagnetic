@@ -56,8 +56,8 @@ Input::Input(string const &jobname_) : jobname(jobname_)
 		}
 		else if (word == "h2m") h2m = rdaf(iss);
 		else if (word == "hh" ) h2m = rdaf(iss);
-                else if (word == "eB" ) eB = rdaf(iss);  
-                else if (word == "momega" ) momega = rdaf(iss); 
+        else if (word == "eB" ) eB = rdaf(iss);  
+        else if (word == "momega" ) momega = rdaf(iss); 
 		else if (word == "dmax") dmax = rdai(iss);
 		else if (word == "bmin") rndmin = rdaf(iss);
 		else if (word == "bmax") rndmax = rdaf(iss);

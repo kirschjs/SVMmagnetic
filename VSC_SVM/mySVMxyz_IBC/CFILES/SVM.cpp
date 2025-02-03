@@ -173,12 +173,15 @@ MatrixXd SVM::Dmatrix()
 	MatrixXd d = MatrixXd::Zero(N, N);
 	for (int i = 0; i < N; i++)
 	{
-		for (int j = i + 1; j < N; j++)
+		for (int j = i +1; j < N; j++)
 		{
 			d(i, j) = bmin + (bmax - bmin)*rr.doub();
+			//if(i!=j) d(j, i) = d(i, j);
 			d(j, i) = d(i, j);
 		}
 	}
+	//cout << d << endl;
+	//exit(0);
 	return d;
 }
 
@@ -197,6 +200,7 @@ MatrixXd SVM::A(MatrixXd d)
 	      for (int k = 0; k < N; k++){
 			if (i != k) A(i, j) = A(i, j) + 2 * pow(d(i, k), -2);
 	      }
+		  if(N==2) A(i, j) = A(i, j) + 0.1*rr.doub() * pow(bmin + (bmax - bmin)*rr.doub(), -2);
 	    }
 	    else{
 	      A(i, j) = -2 * pow(d(i, j), -2);
@@ -215,7 +219,6 @@ vector<MatrixXd> SVM::FirstNewState()
 {
 	vector<MatrixXd> NewState;
 	
-
 	NewState.push_back(A(Dmatrix()));  //x
 	NewState.push_back(A(Dmatrix()));  //y
 	NewState.push_back(A(Dmatrix()));  //z

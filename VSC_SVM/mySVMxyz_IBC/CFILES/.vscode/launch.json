@@ -6,7 +6,7 @@
             "request": "launch",
             "preLaunchTask": "",
             "postDebugTask": "",
-            "program": "/opt/intel/oneapi/compiler/latest/bin/icpx",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
@@ -35,6 +35,33 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "C/C++: icpx build and debug active file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: gcc-8 build active file",
+            "miDebuggerPath": "gdb"
         }
-    ]
+    ],
+    "version": "2.0.0"
 }

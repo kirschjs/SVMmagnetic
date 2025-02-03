@@ -1,0 +1,25 @@
+   npar=2
+!  masses
+   xm(1)=1.  xm(2)=1.
+!  (1) fermions  (2) bosons
+   ibf=2
+!   isospin configurations
+    nisc=1
+    cisc(1)=1.0 iso(1,1)=1 iso(2,1)=1
+!
+!   spin configurations
+    nspc=1
+    cspc(1)=1.0 isp(1,1)=1 isp(2,1)=1
+!   i.e. 0.5*|1>|2> + 0.5*|2>|1> with
+    h2m=1.0
+
+    irand=-1776
+    eB=1.0
+    momega=1.0
+    mm0=20  kk0=10  mnb=150
+    bmin=0.0001  bmax=4.5
+!
+! Pionless EFT LO Potential
+! number of potential terms and operators
+  npt=1  nop=1
+  vpot(1,1)=-473.16     apot(1,1)=4   bpot(1,1)=0  npot(1,1)=0

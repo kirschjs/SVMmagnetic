@@ -13,7 +13,7 @@ class SVM
 private:
 	Rand &rr;
 	MatrixElement me;
-	int N, seed, mm0, kk0, mnb;
+	int N, seed, mm0, kk0, mnb; // N: number of particles
 	double bmin, bmax;
     int iBoxInf;
 

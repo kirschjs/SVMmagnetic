@@ -9,7 +9,7 @@ COMPILER =  icpx #g++
 FLAGS = $(FLAGSopt)
 #FLAGS = $(FLAGSdbg)
 
-LIBS=./eigen/Eigen
+LIBS=/usr/include/eigen3/Eigen
 
 svm: $(SO) 
 	$(COMPILER) $(FLAGS) -o svm.x $^ 

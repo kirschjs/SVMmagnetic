@@ -149,6 +149,9 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
       	InvAAy = (A1y + A2y).inverse();
       	InvAAz = (A1z + A2z).inverse();
 
+      	cout<<InvAAx<<"\n"<<A1x<<"\n"<<A2x<<endl;
+      	exit(0);
+      	
       	detx=(A1x+A2x).determinant();
       	dety=(A1y+A2y).determinant();
       	detz=(A1z+A2z).determinant();
@@ -160,9 +163,9 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
       	TTy = A1y * InvAAy * A2y;
       	TTz = A1z * InvAAz * A2z;
 //     	KinEnergy = KinEnergy + parity[iperm] * stme[iperm*nPairs*nop] *(TTx.trace()+TTy.trace()+TTz.trace())*x;
-      	KinEnergy = KinEnergy + parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)
-	    *(TTx.trace()+TTy.trace()+TTz.trace())*x;
-	
+      	KinEnergy = KinEnergy + //parity[iperm] * stmeop[ijts].perm[iperm].op2b[0].me(0)*
+	    (TTx.trace()+TTy.trace()+TTz.trace())*x;
+		
 		// 3d isotropic single-particle harmonic oscilator
 /*
 	    MagneticEnergyT =  MagneticEnergyT + parity[iperm]
@@ -172,12 +175,9 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
 */
         // Magnetic Energy (single-particle version)
       	for (int ipar = 0 ; ipar < npar ; ipar++){
-		    MagneticEnergyT = MagneticEnergyT + parity[iperm] 
-			* stmeop[ijts].perm[iperm].op1b[0].me(ipar)
-			* (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)+InvAAz(ipar,ipar))
-			* x;
+		    MagneticEnergyT = MagneticEnergyT + //parity[iperm] * stmeop[ijts].perm[iperm].op1b[0].me(ipar) *
+			 (InvAAx(ipar,ipar)+InvAAy(ipar,ipar)+InvAAz(ipar,ipar)) * x;
       	}//--i
-
 /*	
 	// =============MagneticEnergy=======================================================  
 	int ipair = 0;			
@@ -279,7 +279,7 @@ double MatrixElement::energy(BasisState &state1, BasisState &state2){
     //harmonic        = harmonic_cof       * harmonic;
     //MagneticSpin    = MagneticSpin_cof   * MagneticSpin;
 
-    return  KinEnergy + PotEnergy + PotEnergy3B + MagneticEnergyT;
+    return  KinEnergy + MagneticEnergyT;//+ PotEnergy + PotEnergy3B 
 }
 
 

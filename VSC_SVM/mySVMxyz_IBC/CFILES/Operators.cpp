@@ -54,7 +54,7 @@ double Operators::SpinOp(std::vector<int> sz1, std::vector<int> sz2, int i, int 
 		}
 	}
 
-	/* iop: 0-Wigner, 1-Psigma*Ptau, 2-Psigma, 3-Ptau */
+	/* iop: 0-Wigner, 1-Psigma*Ptau(Majorana), 2-Psigma(Bartlett), 3-Ptau=1/2(1-tau_i*tau_j)(Heisenberg) */
 	if (kind == 0) 	return O_0(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);
 	if (kind == 1)	return O_1(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);
 	if (kind == 2)	return O_1(sz1[i], sz1[j], sz2[Perm(i)], sz2[Perm(j)]);

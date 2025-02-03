@@ -4,8 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/CFILES",
-                "/home/kirscher/kette_repo/SVMmagnetic/VSC_SVM/mySVMxyz_IBC/eigen/Eigen"
+                "/usr/include/eigen3/Eigen"
             ],
             "defines": [],
             "cStandard": "c17",

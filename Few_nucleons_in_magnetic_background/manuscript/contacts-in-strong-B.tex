@@ -1,130 +1,37 @@
-\documentclass[aps,prd,onecolumn
-,tightenlines,letterpaper,notitlepage,
-%superscriptaddress,
-nofootinbib]{revtex4-1}
-\usepackage{amssymb,latexsym}
-\usepackage{amsmath,amsbsy,bbm}
-\usepackage{epsfig,bm,color}
-\usepackage{graphicx,comment}
-\unitlength=1mm
-\DeclareMathOperator{\st}{str}
-\DeclareMathOperator{\Erfc}{Erfc}
-\DeclareMathOperator{\Erf}{Erf}
-\DeclareMathOperator{\Pf}{Pf}
-\DeclareMathOperator{\sign}{sign}
+\documentclass[
+reprint,
+onecolumn,
+nofootinbib,
+amsmath,amssymb,
+aps,
+]{revtex4-2}
 
-\usepackage{dutchcal}
+\usepackage{graphicx}
+\usepackage{dcolumn}
+\usepackage{nicefrac}
+\usepackage{hyperref}
+\usepackage{unicode-math}
+\setmathfont{Asana-Math.otf}
+\usepackage{yfonts}
+\usepackage{physics}
 
+\newcommand{\asy}{\ensuremath{\hat{\mathcal{A}}}}
+\newcommand{\bd}{\ensuremath{B_2}}
+\newcommand{\braOket}[3]{\langle #1| #2 | #3 \rangle}
+\newcommand{\braOketred}[3]{\langle #1\| #2 \| #3 \rangle}
+\newcommand{\cl}[1]{\ensuremath{\bar{\vb{r}}_\text{\tiny #1}}}
+\newcommand{\la}[1] {\label{#1}}
+\newcommand{\be} {\begin{equation}}
+\newcommand{\ee} {\end{equation}}
+\renewcommand{\eqref}[1] {Eq.\,(\ref{#1})}
+\renewcommand{\grad}{\ensuremath{\nabla}}
 
-\usepackage{calligra}
-
-\DeclareMathAlphabet{\mathcalligra}{T1}{calligra}{m}{n}
-\DeclareFontShape{T1}{calligra}{m}{n}{<->s*[2.2]callig15}{}
-\newcommand{\scriptr}{\mathcalligra{r}\,}
-\newcommand{\boldscriptr}{\pmb{\mathcalligra{r}}\,}
-% USAGE $\scriptr$ or $\boldscriptr$
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-\def\a{{\alpha}}
-\def\b{{\beta}}
-\def\d{{\delta}}
-\def\D{{\Delta}}
-\def\X{{\Xi}}
-\def\e{{\varepsilon}}
-\def\g{{\gamma}}
-\def\G{{\Gamma}}
-\def\k{{\kappa}}
-\def\l{{\lambda}}
-\def\L{{\Lambda}}
-\def\m{{\mu}}
-\def\n{{\nu}}
-\def\o{{\omega}}
-\def\O{{\Omega}}
-\def\S{{\Sigma}}
-\def\s{{\sigma}}
-\def\th{{\theta}}
-
-\def\ol#1{{\overline{#1}}}
-
-\def\Dslash{D\hskip-0.65em /}
-\def\Dtslash{\tilde{D} \hskip-0.65em /}
-
-\def\order{{\mathcal O}}
-
-\def\Dt{{\tilde{D}}}
-\def\St{{\tilde{\Sigma}}}
-
-\def\eqref#1{{(\ref{#1})}}
-
-\newcommand{\caf}{\text{\cjRL{b}}}
-\newcommand{\he}{${}^4$He}
-\newcommand{\hes}{${}^3$He}
-\newcommand{\tr}{${}^3$H}
-\newcommand{\ls}{\ve{L}\cdot\ve{S}}
-\newcommand{\eps}{\epsilon}
-\newcommand{\as}{a_s}
-\newcommand{\at}{a_t}
-\newcommand{\ecm}{E_\textrm{\small c.m.}}
-\newcommand{\dq}{\mbox{d\hspace{-.55em}$^-$}}
-\newcommand{\mpis}{$m_\pi=137~${\small MeV}}
-\newcommand{\mpim}{$m_\pi=450~${\small MeV}}
-\newcommand{\mpil}{$m_\pi=806~${\small MeV}}
-\newcommand{\muh}{\mu_{^3\text{\scriptsize He}}}
-\newcommand{\mut}{\mu_{^3\text{\scriptsize H}}}
-\newcommand{\mud}{\mu_\text{\scriptsize D}}
-\newcommand{\pode}{\beta_{\text{\scriptsize D},\pm1}}
-\newcommand{\poh}{\beta_{^3\text{\scriptsize He}}}
-\newcommand{\pot}{\beta_{^3\text{\scriptsize H}}}
-\newcommand{\com}[1]{{\scriptsize \sffamily \bfseries \color{red}{#1}}}
-\newcommand{\eg}{\textit{e.g.}\;}
-\newcommand{\ie}{\textit{i.e.}\;}
-\newcommand{\cf}{\textit{c.f.}\;}
-\newcommand{\be}{\begin{equation}}
-\newcommand{\ee}{\end{equation}}
-\newcommand{\la}{\label}
-\newcommand{\ber}{\begin{eqnarray}}
-\newcommand{\eer}{\end{eqnarray}}
-\newcommand{\nn}{\nonumber}
-\newcommand{\half}{\frac{1}{2}}
-\newcommand{\thalf}{\nicefrac[]{3}{2}}
-\newcommand{\bs}[1]{\ensuremath{\boldsymbol{#1}}}
-\newcommand{\bea}{\begin{eqnarray}}
-\newcommand{\eea}{\end{eqnarray}}
-\newcommand{\beq}{\begin{align}}
-\newcommand{\eeq}{\end{align}}
-\newcommand{\bk}{\bs k}
-\newcommand{\bt}{B_{^{3}\text{H}}}
-\newcommand{\bh}{B_{^{3}\text{He}}}
-\newcommand{\bd}{B_\text{D}}
-\newcommand{\ba}{B_\alpha}
-\newcommand{\rgm}{$\mathbb{R}$GM}
-\newcommand{\ev}[1] {|\bra #1  \ket |^2}
-\newcommand{\lam}[1]{$\Lambda=#1~$fm$^{-1}$}
-\newcommand{\parg}[1] {\paragraph*{-\,\textit{#1}\,-}}
-\newcommand{\nopi}{\pi\hspace{-6pt}/}
-\newcommand{\ve}[1]{\ensuremath{\boldsymbol{#1}}}
-\newcommand{\xvec}{\bs{x}}
-\newcommand{\rvec}{\bs{r}}
-\newcommand{\sgve}{\ensuremath{\boldsymbol{\sigma}}}
-\newcommand{\tave}{\ensuremath{\boldsymbol{\tau}}}
-\newcommand{\na}{\nabla}
-\newcommand{\bra}{\langle}
-\newcommand{\ket}{\rangle}
-\newcommand{\tx}{\tilde{x}}
-\newcommand{\eftnopi}{\mbox{EFT($\slashed{\pi}$)}}
-
-\newcommand{\cmment}[1]{\paragraph*{Ecce:\texttt{\textcolor{blue}{#1}}}}
-
-\author{$\mathcal{S}$.~$\mathcal{Mondal}$}
-\author{$\mathcal{M}$.~$\mathcal{Elyahu}$}
-\author{$\mathcal{N}$.~$\mathcal{Barnea}$}
-\author{$\mathcal{J}$.~$\mathcal{Kirscher}$}
+\author{\textfrak{S.~Mondal}}
+\author{\textfrak{M.~Elyahu}}
+\author{\textfrak{N.~Barnea}}
+\author{\textfrak{J.~Kirscher}}
  
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,10 +55,48 @@ to become bound. This field strength shall be analyzed for Bose and Fermi partic
 \section*{Scratch Pad}
 
 \begin{align}
-\ve{A}&=\frac{1}{2}\,\ve{B}\times\ve{r}\\
-&=\frac{1}{2}\,B\rho\,\hat{\phi}\tag{for $\ve{B}=B\hat{z}$}
-\intertext{\centering with $\rho=\sqrt{x^2+y^2}$}
+\vb{A}&=\frac{1}{2}\,\vb{B}\times\vb{r}\\
+&=\frac{1}{2}\,B\rho\,\hat{\phi}\tag{for $\vb{B}=B\hat{z}$}
+\intertext{\centering with $\rho=\sqrt{x^2+y^2}$ and the symmetric gauge}
+\vb{A}=B\,\mqty(-y\\x\\0)\qq{.}
 \end{align}
+
+\paragraph{Understanding the degeneracy in the spectrum: SVM vs. analytical expectation}
+The wave function of two uncoupled particles trapped in two dimensions with identical harmonic-oscillator potentials
+is given by
+
+\begin{align}
+\phi_{n_{x1}n_{y1}n_{x2}n_{y2}}\left(\mqty(x_1\\y_1),\mqty(x_2\\y_2)\right)=
+&~
+\sqrt{\frac{m\omega}{\hbar}}
+\cdot
+\frac{1}{\sqrt{2^{n_{x1}+n_{y1}+n_{x2}+n_{y2}}\cdot\pi\cdot n_{x1}!\cdot n_{y1}!\cdot n_{x2}!\cdot n_{y2}!\cdot }}\nonumber\\
+&~
+\cdot e^{-\frac{m\omega}{2\hbar}\left(x_1^2+y_1^2+x_2^2+y_2^2\right)}
+\cdot H_{n_{x1}}\left(\sqrt{\frac{m\omega}{\hbar}}x_1\right)
+\cdot H_{n_{y1}}\left(\sqrt{\frac{m\omega}{\hbar}}y_1\right)
+\cdot H_{n_{x2}}\left(\sqrt{\frac{m\omega}{\hbar}}x_2\right)
+\cdot H_{n_{y2}}\left(\sqrt{\frac{m\omega}{\hbar}}y_2\right)
+\end{align}
+with
+\begin{align}
+\left(a_{x1}^\dagger a_{x1}+ a_{y1}^\dagger a_{y1}+ a_{x2}^\dagger a_{x2}+ a_{y2}^\dagger a_{y2}\right)
+\,
+\ket{n_{x1}n_{y1}n_{x2}n_{y2}}
+=
+\hbar\omega\,
+\left(
+n_{x1}+n_{y1}+n_{x2}+n_{y2}+2
+\right)
+\,
+\ket{n_{x1}n_{y1}n_{x2}n_{y2}}
+\qq{.}
+\end{align}
+The expansion
+\be
+\phi=\sum\limits_n c_n\,g(0;A_n,(x_1,y_1,x_2,y_2)^\intercal)\qq{.}
+\ee
+cannot approximate \(\sum n=\)odd states because \(H_n(x)=(-1)^nH_n(-x)\).
 
 \section{Introduction -- what fascinates us?}
 
@@ -171,7 +116,7 @@ In order to describe the effect of a static magnetic field, which is not necessa
 perturbatively small, on the low-energy spectra of small nuclei, the 
 effective-field-theory Hamiltonian of the latter is augmented by, first, minimally coupling
 the derivatives, and second, by the magnetic-moment 1-body interaction (a remnant of the
-non-relativistic reduction of the Dirac equation) and the coupling of the $\ve{B}$ field
+non-relativistic reduction of the Dirac equation) and the coupling of the $\vb{B}$ field
 to the four-nucleon leading-order momentum-independent vertex.
 
 \be\la{eq.hamiltonian}
@@ -198,7 +143,7 @@ and shifts their ground state by, at least, the energy in the lowest Landau leve
 
 \section{Two-nucleon systems}
 
-First, we analyse the predictions in Ref.~\cite{PhysRevLett.116.112301}, \ie, what is
+First, we analyse the predictions in Ref.~\cite{PhysRevLett.116.112301}, i.e, what is
 the dependence of the lowest eigenvalues of the 2-proton system on the strength of the
 magnetic field?
 
@@ -210,7 +155,24 @@ with the corresponding strength which is necessary to bind two protons?
 \section{Four Nucleons}
 
 Same critical-strength ratio? Now we extrapolate and predict that no more than 
-$\vert\ve{B}\vert\sim 4~$T is needed to bind an $A$-proton cluster.
+$\vert\vb{B}\vert\sim 4~$T is needed to bind an $A$-proton cluster.
+
+\section{SVM technicalities}
+Any quantity left undefined is to be found in~\cite{suzuki2003stochastic}
+\be
+g(\vb{s};A,\vb{x})=\exp{-\frac{1}{2}\vb{x}^\intercal A\vb{x}+\vb{s}^\intercal\vb{x}}
+\tag{generating function}
+\ee
+
+\begin{align}
+\mel{\,g(\vb{s}';A',\vb{x})\,}{\,\pmb{\pi}^\intercal\Lambda\pmb{\pi}\,}{\,g(\vb{s};A,\vb{x})\,}
+=&
+\hbar^2\left(d\tr(AB^{-1}A'\Lambda)-\vb{y}^\intercal\Lambda\vb{y}\right)\cdot
+\underbrace{\left(\frac{(2\pi)^N}{\det B}\right)^{d/2}\cdot\exp{\frac{1}{2}\vb{v}^\intercal B^{-1}\vb{v}}}_{\equiv\braket{\,g(\vb{s}';A',\vb{x})\,}{\,g(\vb{s};A,\vb{x})\,}}
+\tag{$E_{\text{kin}}$ ME}\\
+\qq{with} &  B=A+A'\qq{,} \vb{v} = \vb{s} + \vb{s}' \qq{,} \vb{y} = A'B^{-1}\vb{s}-AB^{-1}\vb{s}'\\
+\qq{and}  &  A^\intercal=A \qq{,} \Lambda^\intercal=\Lambda \qq{,} \pmb{\pi}_j=-i\hbar\pdv{\vb{x}_j}
+\end{align}
 
 \bibliography{contacts-in-strong-B}
 

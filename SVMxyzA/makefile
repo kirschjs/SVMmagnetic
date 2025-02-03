@@ -3,8 +3,8 @@ CFILES = CFILES
 S = $(wildcard $(CFILES)/*.cpp)
 SO = $(subst $(CFILES),OFILES,$(subst cpp,o,$(S)))
 
-COMPILER =  g++
-FLAGSopt =  -fno-threadsafe-statics -O2
+COMPILER =  icpx
+FLAGSopt =  -fno-threadsafe-statics -O3
 #FLAGSdbg =  -Wall -fbounds-check
 FLAGS = $(FLAGSopt)
 #FLAGS = $(FLAGSdbg)

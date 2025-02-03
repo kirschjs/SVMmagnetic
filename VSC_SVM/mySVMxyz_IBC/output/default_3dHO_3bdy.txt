@@ -1,0 +1,81 @@
+! 
+  npar=3
+!     masses
+  xm(1)=1  xm(2)=1 xm(3)=1  
+!     charges
+  z(1)=0  z(2)=0 z(3)=0  
+!
+!     isospin configurations
+  nisc=2
+    cisc(1)=1   iso(1,1)=1 iso(2,1)=2 iso(3,1)=1  
+    cisc(2)=-1  iso(1,2)=2 iso(2,2)=1 iso(3,2)=1  
+!
+!     spin configurations
+  nspc=2
+    cspc(1)=1   isp(1,1)=1  isp(2,1)=2 isp(3,1)=1  
+    cspc(2)=-1  isp(1,2)=1  isp(2,2)=1 isp(3,2)=2  
+!
+    h2m=1
+    irand=-1776 ibf=1
+    eB=1
+    momega=1
+    mm0=10  kk0=10  mnb=50
+    bmin=0.001 bmax=15
+!
+! the ground energy need to be  1*h2m*eB (Landau)
+! bmax need to be at list  10/sqrt(eB)
+! we need to add  0.5*h2m*eB, the center of mass energy.
+!
+! Pionless EFT LO Potential
+!  number of potential terms and operators
+ npt=1  nop=1
+ vpot(1,1)=0    apot(1,1)=1   bpot(1,1)=0  npot(1,1)=0
+ vpot(1,3)=0    apot(1,3)=1   bpot(1,3)=0  npot(1,3)=0 
+ vpot3b=0        apot3b=1
+
+      itr= 1        E= 8.580595
+      itr= 2        E= 5.255078
+      itr= 3        E= 5.229131
+      itr= 4        E= 5.194524
+      itr= 5        E= 5.188218
+  more eigenvalues=  5.188218  
+      itr= 6        E= 5.156985
+      itr= 7        E= 5.149399
+      itr= 8        E= 5.144769
+      itr= 9        E= 5.126544
+      itr= 10        E= 5.123762
+  more eigenvalues=  5.123762  
+      itr= 11        E= 5.114286
+      itr= 12        E= 5.110482
+      itr= 13        E= 5.102653
+      itr= 14        E= 5.095856
+      itr= 15        E= 5.065962
+  more eigenvalues=  5.065962  
+      itr= 16        E= 5.055065
+      itr= 17        E= 5.052035
+      itr= 18        E= 5.048898
+      itr= 19        E= 5.029593
+      itr= 20        E= 5.027639
+  more eigenvalues=  5.027639  
+      itr= 21        E= 5.016949
+      itr= 22        E= 5.003863
+      itr= 23        E= 4.996107
+      itr= 24        E= 4.977100
+      itr= 25        E= 4.970483
+  more eigenvalues=  4.970483  
+      itr= 26        E= 4.970222
+      itr= 27        E= 4.967853
+      itr= 28        E= 4.966721
+      itr= 29        E= 4.966209
+      itr= 30        E= 4.964944
+  more eigenvalues=  4.964944  8.636918  8.969766  9.206068  10.411699  10.794408  11.156123  12.672101  13.257617  13.566751  14.389678  15.409590  15.756129  16.066039  16.396807  16.881959  17.650708  18.426276  20.046820  21.657478  
+      itr= 31        E= 4.960315
+      itr= 32        E= 4.958448
+      itr= 33        E= 4.957886
+      itr= 34        E= 4.956313
+      itr= 35        E= 4.955798
+  more eigenvalues=  4.955798  8.604025  8.934544  9.190693  10.386393  10.774754  10.947845  12.657116  13.151255  13.444043  14.268581  14.712067  15.585981  15.894412  16.237679  16.862656  17.017761  17.796083  18.114919  18.726072  
+      itr= 36        E= 4.955467
+      itr= 37        E= 4.955165
+      itr= 38        E= 4.955043
+      itr= 39        E= 4.954112
